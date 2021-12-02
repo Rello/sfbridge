@@ -34,6 +34,10 @@ New Contacts/Accounts will be crated if not existing. New Opportunities will be 
         <php min-version="7.0" max-version="8.0"/>
         <nextcloud min-version="20" max-version="25"/>
     </dependencies>
+    <settings>
+        <personal>OCA\SFbridge\Settings\Personal</personal>
+        <personal-section>OCA\SFbridge\Settings\PersonalSection</personal-section>
+    </settings>
     <background-jobs>
         <job>OCA\SFbridge\BackgroundJob\Daily</job>
     </background-jobs>

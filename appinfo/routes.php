@@ -33,5 +33,11 @@ return [
 
         ['name' => 'settings#background', 'url' => '/background', 'verb' => 'POST'],
 
+        ['name' => 'settings#getParameterPaypal', 'url' => '/settings/paypal', 'verb' => 'GET'],
+        ['name' => 'settings#setParameterPaypal', 'url' => '/settings/paypal', 'verb' => 'POST'],
+        ['name' => 'settings#getParameterSalesforce', 'url' => '/settings/salesforce', 'verb' => 'GET'],
+        ['name' => 'settings#setParameterSalesforce', 'url' => '/settings/salesforce', 'verb' => 'POST'],
+
+
     ]
 ];

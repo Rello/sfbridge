@@ -3,7 +3,8 @@ All Paypal transactions like donations or payments will be automatically syncron
 New Contacts/Accounts will be crated if not existing. New Opportunities will be created or updated (recurring).
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/rello/data/master/screenshots/charts25.png" alt="Main" width="300" title="Analytics">
+<img src="https://raw.githubusercontent.com/rello/sfbridge/master/screenshots/app.png" alt="Main" width="300" title="SFBridge">
+<img src="https://raw.githubusercontent.com/rello/sfbridge/master/screenshots/settings.png" alt="Main" width="300" title="SFBridge">
 </p>
 
 ## Features
