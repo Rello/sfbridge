@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+	<id>sfbridge</id>
+    <name>Salesforce Bridge</name>
+    <summary>...</summary>
+	<description><![CDATA[
+This automation bridges the gap between Paypal and Salesforce for non-profit organizations.
+
+
+All Paypal transactions like donations or payments will be automatically syncronied with the N**? cloud of Salesforce.
+New Contacts/Accounts will be crated if not existing. New Opportunities will be created or updated (recurring).
+]]></description>
+    <version>0.0.2</version>
+    <licence>agpl</licence>
+    <author>Marcel Scherello</author>
+    <namespace>SFbridge</namespace>
+    <documentation>
+        <user>https://github.com/Rello/analytics/wiki</user>
+    </documentation>
+    <category>office</category>
+    <website>https://rello.github.io/analytics/</website>
+    <discussion>https://help.nextcloud.com/c/apps/analytics</discussion>
+    <bugs>https://github.com/Rello/analytics/issues</bugs>
+    <screenshot>
+        https://raw.githubusercontent.com/Rello/analytics/master/screenshots/logo25.png
+    </screenshot>
+    <screenshot>
+        https://raw.githubusercontent.com/Rello/analytics/master/screenshots/charts25.png
+    </screenshot>
+    <screenshot>
+        https://raw.githubusercontent.com/Rello/analytics/master/screenshots/architecture25.png
+    </screenshot>
+    <dependencies>
+        <php min-version="7.0" max-version="8.0"/>
+        <nextcloud min-version="20" max-version="25"/>
+    </dependencies>
+    <background-jobs>
+        <job>OCA\SFbridge\BackgroundJob\Daily</job>
+    </background-jobs>
+    <navigations>
+        <navigation>
+            <id>sfbridge</id>
+            <name>Salesforce Bridge</name>
+            <route>sfbridge.page.index</route>
+            <icon>app.svg</icon>
+            <order>6</order>
+        </navigation>
+    </navigations>
+</info>

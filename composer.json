@@ -1,0 +1,15 @@
+{
+  "name": "vendor_name/sfbridge",
+  "description": "description",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Rello",
+      "email": "email@example.com"
+    }
+  ],
+  "require": {
+    "ehaerer/php-salesforce-rest-api":  "1.0.6"
+  }
+}
