@@ -54,7 +54,6 @@
     <button id="sfCompare" type="button" class="primary">
         <?php p($l->t('Start')); ?>
     </button> <input type="checkbox" id="sfLiveRun" class="checkbox"><label for="sfLiveRun">Update!</label>
-    <br><input type="checkbox" id="sfBackground" class="checkbox"><label for="sfBackground">Daily Background Check (no update)</label>
     <br>
     <br>
     <div id="sfCounts" name="Text1" cols="100" rows="7" style="width: 500px;"></div>

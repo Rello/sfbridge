@@ -10,9 +10,8 @@
  */
 
 use OCP\Util;
-
 Util::addScript('sfbridge', 'app');
-
+Util::addScript('sfbridge', 'userGuidance');
 ?>
 
 <div id="app-navigation" class="hidden">

@@ -245,27 +245,6 @@ OCA.SFbridge.Compare = {
 
 OCA.SFbridge.Settings = {
 
-    background: function () {
-        let background = document.getElementById('sfBackground').checked;
-
-        let params = 'background=' + background;
-
-        let xhr = new XMLHttpRequest();
-        xhr.open('POST', OC.generateUrl('apps/sfbridge/background', true));
-        xhr.setRequestHeader('requesttoken', OC.requestToken);
-        xhr.setRequestHeader('OCS-APIREQUEST', 'true');
-        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=UTF-8');
-
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    let data = JSON.parse(xhr.response);
-                }
-            }
-        };
-        xhr.send(params);
-    },
-
     getInitialState: function (key) {
         const app = 'sfbridge';
         const elem = document.querySelector(`#initial-state-${app}-${key}`)
@@ -278,14 +257,5 @@ OCA.SFbridge.Settings = {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-/*
-    document.getElementById('sfAuthButton').addEventListener('click', OCA.SFbridge.SF.auth);
-    document.getElementById('sfContactSearchButton').addEventListener('click', OCA.SFbridge.SF.contactSearch);
-    document.getElementById('sfContactCreateButton').addEventListener('click', OCA.SFbridge.SF.contactCreate);
-    document.getElementById('sfOpportunitySearchButton').addEventListener('click', OCA.SFbridge.SF.opportunitySearch);
-    document.getElementById('sfOpportunityCreateButton').addEventListener('click', OCA.SFbridge.SF.opportunityCreate);
-*/
     document.getElementById('sfCompare').addEventListener('click', OCA.SFbridge.Compare.compare);
-    document.getElementById('sfBackground').addEventListener('click', OCA.SFbridge.Settings.background);
-    document.getElementById('sfBackground').checked = OCA.SFbridge.Settings.getInitialState('background') === 'true';
 });

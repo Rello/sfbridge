@@ -9,7 +9,9 @@
  * @copyright 2016-2021 Marcel Scherello
  */
 
-script('sfbridge', 'settings/personal');
+use OCP\Util;
+Util::addScript('sfbridge', 'settings/personal');
+Util::addScript('sfbridge', 'userGuidance');
 ?>
 
 <div class="section">
@@ -25,6 +27,9 @@ script('sfbridge', 'settings/personal');
         <label for="paypal_instanceUrl"><?php p($l->t('paypal_instanceUrl')); ?>:</label>
         <input type="text" id="paypal_instanceUrl" value="<?php p($_['paypal_instanceUrl']); ?>" style="width: 300px;"/>
         <br>
+        <button id="paypal_save" type="button" class="primary">
+            <?php p($l->t('Save')); ?>
+        </button>
     </div>
 </div>
 
@@ -42,5 +47,14 @@ script('sfbridge', 'settings/personal');
         <br>
         <label for="salesforce_password"><?php p($l->t('salesforce_password')); ?>:</label>
         <input type="text" id="salesforce_password" value="<?php p($_['salesforce_password']); ?>" style="width: 300px;"/>
+        Password + Security Token!
+        <br>
+        <button id="salesforce_save" type="button" class="primary">
+            <?php p($l->t('Save')); ?>
+        </button>
     </div>
+</div>
+<br>
+<div class="section">
+    <input type="checkbox" id="sfBackground" class="checkbox"><label for="sfBackground">Daily Background Check (no update)</label>
 </div>
