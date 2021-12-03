@@ -25,20 +25,13 @@ The job can be run in the background and will notify the user if new transaction
     <author>Marcel Scherello</author>
     <namespace>SFbridge</namespace>
     <documentation>
-        <user>https://github.com/Rello/analytics/wiki</user>
+        <user>https://github.com/Rello/sfbridge</user>
     </documentation>
     <category>office</category>
-    <website>https://rello.github.io/analytics/</website>
-    <discussion>https://help.nextcloud.com/c/apps/analytics</discussion>
-    <bugs>https://github.com/Rello/analytics/issues</bugs>
+    <website>https://github.com/Rello/sfbridge</website>
+    <bugs>https://github.com/Rello/sfbridge/issues</bugs>
     <screenshot>
-        https://raw.githubusercontent.com/Rello/analytics/master/screenshots/logo25.png
-    </screenshot>
-    <screenshot>
-        https://raw.githubusercontent.com/Rello/analytics/master/screenshots/charts25.png
-    </screenshot>
-    <screenshot>
-        https://raw.githubusercontent.com/Rello/analytics/master/screenshots/architecture25.png
+        https://raw.githubusercontent.com/Rello/analytics/master/screenshots/app2.png
     </screenshot>
     <dependencies>
         <php min-version="7.0" max-version="8.0"/>

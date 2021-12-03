@@ -4,8 +4,8 @@ New Contacts/Accounts will be crated if not existing. New Opportunities will be 
 
 The job can be run in the background and will notify the user if new transactions are available in Paypal.
 <p align="center">
-<img src="https://raw.githubusercontent.com/Rello/sfbridge/master/screenshots/app.png" alt="Main" width="300" title="SFBridge">
-<img src="https://raw.githubusercontent.com/Rello/sfbridge/master/screenshots/settings.png" alt="Main" width="300" title="SFBridge">
+<img src="https://raw.githubusercontent.com/Rello/sfbridge/master/screenshots/app2.png" alt="Main" width="300" title="SFBridge">
+<img src="https://raw.githubusercontent.com/Rello/sfbridge/master/screenshots/settings2.png" alt="Main" width="300" title="SFBridge">
 </p>
 
 ## Features
