@@ -31,7 +31,7 @@ The job can be run in the background and will notify the user if new transaction
     <website>https://github.com/Rello/sfbridge</website>
     <bugs>https://github.com/Rello/sfbridge/issues</bugs>
     <screenshot>
-        https://raw.githubusercontent.com/Rello/analytics/master/screenshots/app2.png
+        https://raw.githubusercontent.com/Rello/sfbridge/master/screenshots/app2.png
     </screenshot>
     <dependencies>
         <php min-version="7.0" max-version="8.0"/>
