@@ -35,20 +35,24 @@ class SettingsController extends Controller
     }
 
     /**
-     * get all reports
+     * enable or disable the background job scheduling
      *
      * @NoAdminRequired
+     * @param bool $background
      * @return DataResponse
      */
     public function background($background = false)
     {
-        return new DataResponse($this->StoreService->set('background', $background, false));
+        return new DataResponse($this->StoreService->set('background', $background));
     }
 
     /**
-     * get all reports
+     * set Paypal parameters
      *
      * @NoAdminRequired
+     * @param $client_id
+     * @param $client_secret
+     * @param $instanceUrl
      * @return DataResponse
      */
     public function setParameterPaypal($client_id, $client_secret, $instanceUrl)
@@ -62,7 +66,7 @@ class SettingsController extends Controller
     }
 
     /**
-     * get all reports
+     * get Paypal parameters
      *
      * @NoAdminRequired
      * @return DataResponse
@@ -73,9 +77,13 @@ class SettingsController extends Controller
     }
 
     /**
-     * get all reports
+     * set Salesforce parameters
      *
      * @NoAdminRequired
+     * @param $client_id
+     * @param $client_secret
+     * @param $username
+     * @param $password
      * @return DataResponse
      */
     public function setParameterSalesforce($client_id, $client_secret, $username, $password)
@@ -91,7 +99,7 @@ class SettingsController extends Controller
     }
 
     /**
-     * get all reports
+     * get Salesforce parameters
      *
      * @NoAdminRequired
      * @return DataResponse

@@ -35,7 +35,8 @@ class SalesforceController extends Controller
     }
 
     /**
-     * get all reports
+     * initiate the authentication process
+     * used for testing
      *
      * @NoAdminRequired
      * @return DataResponse

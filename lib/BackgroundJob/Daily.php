@@ -55,7 +55,7 @@ class Daily extends TimedJob
             if ($scheduled) {
                 $from = date('Y-m-d\T00:00', strtotime("-3 days"));
                 $to = date('Y-m-d\T00:00');
-                $this->CompareService->compare(false, $from, $to);
+                $this->CompareService->compare(false, $from, $to, true);
             }
         } catch (\Exception $e) {
             // no action

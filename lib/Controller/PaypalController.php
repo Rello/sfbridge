@@ -35,23 +35,29 @@ class PaypalController extends Controller
     }
 
     /**
-     * get all reports
+     * initiate the authentication process
+     * used for testing
      *
      * @NoAdminRequired
      * @return DataResponse
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceAuthenticationException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
      */
-    public function auth()
+    public function auth(): DataResponse
     {
         return new DataResponse($this->PaypalService->auth());
     }
 
     /**
-     * get all reports
+     * get all transactions
+     * used for testing
      *
      * @NoAdminRequired
      * @return DataResponse
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceAuthenticationException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
      */
-    public function transactions()
+    public function transactions(): DataResponse
     {
         $start = '2021-11-04T00:00:00-0700';
         $end = '2021-11-10T23:59:59-0700';

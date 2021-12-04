@@ -16,8 +16,6 @@ use Psr\Log\LoggerInterface;
 
 class CompareService
 {
-
-    private $userId;
     private $logger;
     private $PaypalService;
     private $SalesforceService;
@@ -29,16 +27,13 @@ class CompareService
     private $opportunitiesNewCount = 0;
     private $opportunitiesUpdateCount = 0;
 
-
     public function __construct(
-        $userId,
         LoggerInterface $logger,
         PaypalService $PaypalService,
         NotificationManager $NotificationManager,
         SalesforceService $SalesforceService
     )
     {
-        $this->userId = $userId;
         $this->logger = $logger;
         $this->PaypalService = $PaypalService;
         $this->NotificationManager = $NotificationManager;
@@ -46,14 +41,21 @@ class CompareService
     }
 
     /**
-     * get all reports
+     * start the compare process
      *
-     * @return mixed
+     * @param $update
+     * @param $from
+     * @param $to
+     * @param bool $isBackgroundJob
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceAuthenticationException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
      */
-    public function compare($update, $from, $to)
+    public function compare($update, $from, $to, $isBackgroundJob = false): array
     {
-        $start = $from.':00-0000';
-        $end = $to.':00-0000';
+        $start = $from . ':00-0000';
+        $end = $to . ':00-0000';
 
         if ($update === 'true') {
             $this->update = true;
@@ -74,7 +76,7 @@ class CompareService
 
         // compare for existing contact
         // create missing contacts
-        $validateContacts = $this->validateContact($transactionsNew);
+        $validateContacts = $this->validateContacts($transactionsNew);
         $transactionsNew = $validateContacts['transactions'];
 
         // compare for existing opportunitiy
@@ -82,7 +84,7 @@ class CompareService
         $validateOpportunities = $this->validateOpportunities($transactionsNew);
         $transactionsNew = $validateOpportunities['transactions'];
 
-        if ($this->transactionsNewCount !== 0) {
+        if ($this->transactionsNewCount !== 0 && $isBackgroundJob) {
             $this->NotificationManager->triggerNotification(NotificationManager::NEW_TRANSACTION, 0, $this->transactionsNewCount, ['subject' => $this->transactionsNewCount], 'admin');
         }
 
@@ -98,19 +100,30 @@ class CompareService
             'new transactions' => $transactionsNew,
             'new contacts' => $validateContacts['contacts'],
             'new opportunities' => $validateOpportunities['opportunities'],
-            'updated opportunities' =>$validateOpportunities['opportunitiesUpdate'],
+            'updated opportunities' => $validateOpportunities['opportunitiesUpdate'],
         ];
     }
 
-    private function validateOpportunities ($transactionsNew) {
+    /**
+     * validate opportunities
+     * check for existing opportunities for the Paypal transaction id
+     * If no opportunity is existing, a new one is created
+     *
+     * @param $transactionsNew
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
+     */
+    private function validateOpportunities($transactionsNew): array
+    {
         $opportunitiesNew = $opportunitiesUpdate = array();
 
         foreach ($transactionsNew as $transaction) {
-            // search existing Opp: contactId & amount & status "Pledged"
+            // search for existing Opp: contactId & amount & status "Pledged"
             $opportunityPledgeId = $this->SalesforceService->opportunityPledgeSearch($transaction['contactId'], $transaction['transactionAmount']);
 
             if ($opportunityPledgeId) {
-                // Update Status "Closed Won"
+                // Opportunity is a recurring pledge. Update Status "Closed Won"
                 $this->opportunitiesUpdateCount++;
                 array_push($opportunitiesUpdate, $opportunityPledgeId['Name']);
                 if ($this->update) {
@@ -123,7 +136,7 @@ class CompareService
                 $this->opportunitiesNewCount++;
                 array_push($opportunitiesNew, $transaction['payerAlternateName'] . ' ' . $transaction['transactionAmount'] . ' ' . $transaction['transactionDate']);
                 if ($this->update) {
-                    $newOpp = $this->SalesforceService->opportunityCreate($transaction['contactId']
+                    $this->SalesforceService->opportunityCreate($transaction['contactId']
                         , $transaction['payerAlternateName']
                         , $transaction['accountId']
                         , $transaction['transactionAmount']
@@ -139,20 +152,28 @@ class CompareService
             'opportunities' => $opportunitiesNew,
             'opportunitiesUpdate' => $opportunitiesUpdate
         ];
-
     }
 
-    private function validateContact ($transactionsNew) {
+    /**
+     * validate contacts
+     * check for existing contacts by the Paypal email
+     * If no contact is existing, a new one is created
+     *
+     * @param $transactionsNew
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
+     */
+    private function validateContacts($transactionsNew): array
+    {
         $contactsNew = array();
         foreach ($transactionsNew as &$transaction) {
             $contact = $this->SalesforceService->contactSearch('Email', $transaction['payerEmail']);
             if ($contact['totalSize'] === 0) {
                 $this->contactsNewCount++;
-                array_push($contactsNew, $transaction['payerAlternateName'] .' ' . $transaction['payerEmail']);
+                array_push($contactsNew, $transaction['payerAlternateName'] . ' ' . $transaction['payerEmail']);
                 if ($this->update) {
                     $newContact = $this->SalesforceService->contactCreate($transaction['payerGivenName'], $transaction['payerSurName'], $transaction['payerAlternateName'], $transaction['payerEmail']);
-                    //$newAccountId = $newContact['accountId'];
-                    //$newContactId = $newContact['contactId'];
                     $transaction['contactId'] = $newContact['contactId'];
                     $transaction['accountId'] = $newContact['accountId'];
                     $transaction['isNewContact'] = true;
@@ -161,7 +182,7 @@ class CompareService
                     $transaction['contactId'] = '000000000000000000';
                     $transaction['accountId'] = '000000000000000000';
                 }
-            }  else {
+            } else {
                 $transaction['contactId'] = $contact['records'][0]['Id'];
                 $transaction['accountId'] = $contact['records'][0]['AccountId'];
                 $transaction['isNewContact'] = false;
@@ -170,10 +191,17 @@ class CompareService
         return [
             'transactions' => $transactionsNew,
             'contacts' => $contactsNew
-            ];
+        ];
     }
 
-    private function filterTransaction ($transactions, $payments)
+    /**
+     * Filter all transactions and only return new/unknown ones
+     *
+     * @param $transactions
+     * @param $payments
+     * @return array
+     */
+    private function filterTransaction($transactions, $payments): array
     {
         foreach ($transactions as $key => &$transaction) {
             if (in_array($transaction['transactionId'], $payments)) {
@@ -183,7 +211,14 @@ class CompareService
         return $transactions;
     }
 
-    private function harmonizeTransactions ($transactions) {
+    /**
+     * create one dimensional transaction records with just the required fields
+     *
+     * @param $transactions
+     * @return array
+     */
+    private function harmonizeTransactions($transactions): array
+    {
         $transactionsLined = array();
         foreach ($transactions as $transaction) {
             $transactionInfo = $transaction['transaction_info'];
@@ -191,7 +226,7 @@ class CompareService
             $line['transactionType'] = $transactionInfo['transaction_event_code'];
             $line['transactionDate'] = $transactionInfo['transaction_initiation_date'];
             $line['transactionAmount'] = $transactionInfo['transaction_amount']['value'];
-            $line['transactionFee'] = isset($transactionInfo['fee_amount']) ? ltrim($transactionInfo['fee_amount']['value'], '-'): null;
+            $line['transactionFee'] = isset($transactionInfo['fee_amount']) ? ltrim($transactionInfo['fee_amount']['value'], '-') : null;
             // "transactionType": "T1105",
 
             $payerInfo = $transaction['payer_info'];
@@ -201,7 +236,7 @@ class CompareService
             $line['payerAlternateName'] = $payerInfo['payer_name']['alternate_full_name'] ?? null;
 
             if ($line['transactionType'] !== 'T1105' && $line['transactionType'] !== 'T0400') {
-                array_push($transactionsLined,$line);
+                array_push($transactionsLined, $line);
             }
         }
         return $transactionsLined;

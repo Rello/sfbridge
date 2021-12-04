@@ -35,12 +35,12 @@ class CompareController extends Controller
     }
 
     /**
-     * get all reports
+     * start the compare process
      *
      * @NoAdminRequired
      * @return DataResponse
      */
-    public function compare($update, $from, $to)
+    public function compare($update, $from, $to): DataResponse
     {
         return new DataResponse($this->CompareService->compare($update, $from, $to));
     }

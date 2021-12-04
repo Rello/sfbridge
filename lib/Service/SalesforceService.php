@@ -38,11 +38,14 @@ class SalesforceService
     }
 
     /**
-     * get all reports
+     * initiate the authentication process
      *
-     * @return mixed
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceAuthenticationException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
      */
-    public function auth()
+    public function auth(): array
     {
 
         $parameter = $this->StoreService->getSecureParameter(self::APPLICATION);
@@ -59,7 +62,14 @@ class SalesforceService
         ];
     }
 
-    private function authCheck() {
+    /**
+     * check if the existing token is still valid and renew
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceAuthenticationException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
+     */
+    private function authCheck()
+    {
         $token = $this->StoreService->getSecureToken(self::APPLICATION);
         $this->accessToken = $token['accessToken'];
         $this->instanceUrl = $token['instanceUrl'];
@@ -72,12 +82,17 @@ class SalesforceService
     }
 
     /**
-     * migrate old favorite ids
+     * create contact
      *
-     * @param $name
-     * @return mixed
+     * @param $givenName
+     * @param $surName
+     * @param $alternateName
+     * @param $email
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
      */
-    public function contactCreate($givenName, $surName, $alternateName, $email)
+    public function contactCreate($givenName, $surName, $alternateName, $email): array
     {
         if (!$givenName && !$surName) {
             // is corporate account
@@ -114,10 +129,10 @@ class SalesforceService
     }
 
     /**
-     * migrate old favorite ids
+     * get all contacts
      *
-     * @param $name
      * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function contactIndex()
     {
@@ -125,30 +140,32 @@ class SalesforceService
         $query = 'SELECT Id, AccountId, Name, FirstName, LastName FROM Contact LIMIT 100';
 
         $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
-        $data = $salesforceFunctions->query($query);
-        return $data;
+        return $salesforceFunctions->query($query);
     }
 
     /**
-     * migrate old favorite ids
+     * search contact by field & keyword
      *
-     * @param $name
+     * @param $field
+     * @param $keyword
      * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function contactSearch($field, $keyword)
     {
         $query = 'SELECT Id, Name, AccountId FROM Contact WHERE ' . $field . ' = \'' . $keyword . '\'';
 
         $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
-        $data = $salesforceFunctions->query($query);
-        return $data;
+        return $salesforceFunctions->query($query);
     }
 
     /**
-     * migrate old favorite ids
+     * search opportunity by field & keyword
      *
-     * @param $name
+     * @param $field
+     * @param $keyword
      * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function opportunitySearch($field, $keyword)
     {
@@ -160,10 +177,12 @@ class SalesforceService
     }
 
     /**
-     * migrate old favorite ids
+     * search for opportunities type pledge
      *
-     * @param $name
+     * @param $contactId
+     * @param $amount
      * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function opportunityPledgeSearch($contactId, $amount)
     {
@@ -179,10 +198,12 @@ class SalesforceService
     }
 
     /**
-     * migrate old favorite ids
+     * update opportunity type pledge
      *
-     * @param $name
+     * @param $id
      * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
      */
     public function opportunityPledgeUpdate($id)
     {
@@ -195,11 +216,20 @@ class SalesforceService
         return $pledgeId;
     }
 
-        /**
-     * migrate old favorite ids
+    /**
+     * create opportunity
      *
+     * @param $contactId
      * @param $name
+     * @param $accountId
+     * @param $amount
+     * @param $fee
+     * @param $date
+     * @param $paypalId
+     * @param $isNewContact
      * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
      */
     public function opportunityCreate($contactId, $name, $accountId, $amount, $fee, $date, $paypalId, $isNewContact)
     {
@@ -233,15 +263,15 @@ class SalesforceService
             // payment not existing. must be an expense booking
             $this->paymentCreate($opportunityId, $paypalId, $amount, $date);
         }
-
         return $opportunityId;
     }
 
     /**
-     * migrate old favorite ids
+     * get payment by opportunity id
      *
-     * @param $name
+     * @param $opportunityId
      * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function paymentByOpportunityId($opportunityId)
     {
@@ -256,8 +286,18 @@ class SalesforceService
         }
     }
 
-    private function allocationCreate($opportunityId, $fee) {
-        if($fee) {
+    /**
+     * create allocation to track transaction fees
+     *
+     * @param $opportunityId
+     * @param $fee
+     * @return false|mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
+     */
+    private function allocationCreate($opportunityId, $fee)
+    {
+        if ($fee) {
             $data = [
                 'npsp__Amount__c' => $fee,
                 'npsp__Opportunity__c' => $opportunityId,
@@ -269,7 +309,19 @@ class SalesforceService
         return false;
     }
 
-    private function paymentCreate($opportunityId, $paypalId, $amount, $date) {
+    /**
+     * create payment
+     *
+     * @param $opportunityId
+     * @param $paypalId
+     * @param $amount
+     * @param $date
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
+     */
+    private function paymentCreate($opportunityId, $paypalId, $amount, $date)
+    {
         $data = [
             'npe01__Opportunity__c' => $opportunityId,
             'npe01__Check_Reference_Number__c' => $paypalId,
@@ -279,21 +331,40 @@ class SalesforceService
             'npe01__Payment_Date__c' => $date
         ];
         $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
-        return  $salesforceFunctions->create('npe01__OppPayment__c', $data);
+        return $salesforceFunctions->create('npe01__OppPayment__c', $data);
     }
 
-    public function paymentUpdateReference($paymentId, $paypalId) {
+    /**
+     * update paypal transaction id in existing payment
+     *
+     * @param $paymentId
+     * @param $paypalId
+     * @return int
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
+     */
+    public function paymentUpdateReference($paymentId, $paypalId)
+    {
         $data = [
             'npe01__Check_Reference_Number__c' => $paypalId,
             'npe01__Payment_Method__c' => 'Paypal',
         ];
         $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
-        return  $salesforceFunctions->update('npe01__OppPayment__c', $paymentId, $data);
+        return $salesforceFunctions->update('npe01__OppPayment__c', $paymentId, $data);
     }
 
-    public function paymentsByReference($data) {
+    /**
+     * search payment by paypal transaction id
+     * @param $data
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceAuthenticationException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
+     */
+    public function paymentsByReference($data)
+    {
         $auth = $this->authCheck();
-        $references = implode ("','", $data);
+        $references = implode("','", $data);
         $query = 'SELECT Id, npe01__Check_Reference_Number__c FROM npe01__OppPayment__c WHERE npe01__Check_Reference_Number__c IN (\'' . $references . '\')';
 
         $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);

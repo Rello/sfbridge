@@ -10,6 +10,7 @@
     }
   ],
   "require": {
-    "ehaerer/php-salesforce-rest-api":  "1.0.6"
+    "ehaerer/php-salesforce-rest-api":  "1.0.6",
+    "ext-json": "*"
   }
 }

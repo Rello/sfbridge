@@ -23,7 +23,6 @@ class PaypalService
     const TYPE_PAYMENT = 'T0003';
     const TYPE_DONATION = 'T0013';
 
-    private $userId;
     private $logger;
     private $StoreService;
     private $accessToken;
@@ -32,22 +31,20 @@ class PaypalService
     const APPLICATION = 'paypal';
 
     public function __construct(
-        $userId,
         LoggerInterface $logger,
         StoreService $StoreService
     )
     {
-        $this->userId = $userId;
         $this->logger = $logger;
         $this->StoreService = $StoreService;
     }
 
     /**
-     * get all reports
+     * initiate the authentication process
      *
-     * @return mixed
+     * @return array
      */
-    public function auth()
+    public function auth(): array
     {
         $parameter = $this->StoreService->getSecureParameter(self::APPLICATION);
 
@@ -76,6 +73,12 @@ class PaypalService
         return ['accessToken' => $response['access_token']];
     }
 
+    /**
+     * check if the existing token is still valid and renew
+     *
+     * @throws SalesforceAuthenticationException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
+     */
     private function authCheck()
     {
         $token = $this->StoreService->getSecureToken(self::APPLICATION);
@@ -90,7 +93,14 @@ class PaypalService
     }
 
     /**
+     * get all transactions
+     *
+     * @param $start
+     * @param $end
+     * @param $type
      * @return \Exception[]|ClientException[]|GuzzleException[]|mixed
+     * @throws SalesforceAuthenticationException
+     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
      */
     public function transactions($start, $end, $type)
     {

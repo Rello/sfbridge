@@ -45,22 +45,35 @@ class StoreService
     }
 
     //
-    // Secure Token - any application
+    // Secure Tokens - they are stored with a validity
     //
 
+    /**
+     * get the valid token; will return false when the token validity i > 2hrs
+     *
+     * @param $application
+     * @return false|mixed
+     */
     public function getSecureToken($application)
     {
         $user = $this->UserSession->getUser();
         $auth = $this->credentialsManager->retrieve($user->getUID(), self::appName . ':' . $application . 'Token');
-        $compare = time() - (60 * 60);
+        $compare = time() - (60 * 60 * 2);
         if ($auth['validity'] > $compare) {
             return $auth;
         } else {
             return false;
         }
-
     }
 
+    /**
+     * store token with current timestamp
+     *
+     * @param $application
+     * @param $token
+     * @param $instanceUrl
+     * @return bool
+     */
     public function setSecureToken($application, $token, $instanceUrl)
     {
         $user = $this->UserSession->getUser();
@@ -72,16 +85,30 @@ class StoreService
         return true;
     }
 
+
     //
-    // get all parameters
+    // Get standard connection parameters
     //
 
+    /**
+     * get parameters for an application
+     *
+     * @param $application
+     * @return mixed
+     */
     public function getSecureParameter($application)
     {
         $user = $this->UserSession->getUser();
         return $this->credentialsManager->retrieve($user->getUID(), self::appName . ':' . $application);
     }
 
+    /**
+     * set parameters for an application
+     *
+     * @param $application
+     * @param $parameter
+     * @return mixed
+     */
     public function setSecureParameter($application, $parameter)
     {
         $user = $this->UserSession->getUser();
@@ -89,21 +116,36 @@ class StoreService
         return true;
     }
 
+    /**
+     * set non-secure user parameter
+     * used for the background execution status
+     *
+     * @param $token
+     * @param $value
+     * @return mixed
+     * @throws \OCP\PreConditionNotMetException
+     */
+    public function set($token, $value)
+    {
+        $user = $this->UserSession->getUser();
+        $this->config->setUserValue($user->getUID(), 'sfbridge', $token, $value);
+        return true;
+    }
 
-
-    //
-    // Secure Salesforce
-    //
-
-    public function getSecureSalesforce()
+    /**
+     * backup; not used
+     */
+    private function getSecureSalesforce()
     {
         $user = $this->UserSession->getUser();
         $auth = $this->credentialsManager->retrieve($user->getUID(), self::appName . '.' . 'salesforce');
         return $auth;
     }
 
-
-    public function setSecureSalesforce($client_id, $client_secret, $instanceUrl)
+    /**
+     * backup; not used
+     */
+    private function setSecureSalesforce($client_id, $client_secret, $instanceUrl)
     {
         $user = $this->UserSession->getUser();
         $this->credentialsManager->store($user->getUID(), self::appName . '.' . 'salesforce', [
@@ -115,6 +157,4 @@ class StoreService
         ]);
         return true;
     }
-
-
 }

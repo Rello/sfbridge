@@ -1,5 +1,5 @@
 This automation bridges the gap between Paypal and the Salesforce solution for non-profit organizations.<br><br>
-All Paypal transactions like donations or payments will be automatically syncronized with the Salesforce Nonprofit Success Pack (NPSP).<br>
+All Paypal transactions like donations or payments will be automatically synchronized with the Salesforce Nonprofit Success Pack (NPSP).<br>
 New Contacts/Accounts will be crated if not existing. New Opportunities will be created or updated (recurring donations).
 
 The job can be run in the background and will notify the user if new transactions are available in Paypal.
@@ -9,14 +9,13 @@ The job can be run in the background and will notify the user if new transaction
 </p>
 
 ## Features
+- No customer data is stored (data privacy)
 - Paypal: Read transaction history
 - Salesforce: Create Household/Organization accounts
-- Salesforce: Create Opportunities/Payments/Allocations
-- Salesforce: Update Opportunities (of recurring donations)
+- Salesforce: Create/update Opportunities/Payments/Allocations
 - Simulation mode before updating
 - Automated search for new transactions via Nextcloud background job
 - Nextcloud Notifications for new transactions
-- No data is stored (data privacy)
 
 ## Prerequisites
 - Salesforce Nonprofit Success Pack (NPSP)
@@ -32,7 +31,7 @@ The job can be run in the background and will notify the user if new transaction
 
 ## Support
 Thank you to PhpStorm from [JetBrains](https://www.jetbrains.com/?from=AudioPlayerforNextcloudandownCloud) <br>
-<img src="https://raw.githubusercontent.com/rello/data/master/screenshots/jetbrains.svg" alt="Main" width="100" title="Analytics">
+<img src="https://raw.githubusercontent.com/rello/data/master/screenshots/jetbrains.svg" alt="Main" width="100" title="Salesforce Bridge">
 
 ---
 [![Version](https://img.shields.io/github/release/rello/sfbridge.svg)](https://github.com/rello/sfbridge/blob/master/CHANGELOG.md)&#160;[![License: AGPLv3](https://img.shields.io/badge/license-AGPLv3-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)&#160;&#160;&#160;[![Bitcoin](https://img.shields.io/badge/donate-Bitcoin-blue.svg)](https://github.com/rello/audioplayer/wiki/donate)&#160;[![PayPal](https://img.shields.io/badge/donate-PayPal-blue.svg)](https://github.com/rello/audioplayer/wiki/donate)
