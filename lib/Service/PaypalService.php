@@ -83,9 +83,10 @@ class PaypalService
     {
         $token = $this->StoreService->getSecureToken(self::APPLICATION);
         $parameter = $this->StoreService->getSecureParameter(self::APPLICATION);
-        $this->accessToken = $token['accessToken'];
-        $this->instanceUrl = $parameter['instanceUrl'];
-        if (!$this->accessToken) {
+        if ($token !== false) {
+            $this->accessToken = $token['accessToken'];
+            $this->instanceUrl = $parameter['instanceUrl'];
+        } else {
             $newToken = $this->auth();
             $this->StoreService->setSecureToken(self::APPLICATION, $newToken['accessToken'], null);
             $this->accessToken = $newToken['accessToken'];

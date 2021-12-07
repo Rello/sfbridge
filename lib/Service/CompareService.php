@@ -130,6 +130,7 @@ class CompareService
                     $this->SalesforceService->opportunityPledgeUpdate($opportunityPledgeId['Id']);
                     $paymentId = $this->SalesforceService->paymentByOpportunityId($opportunityPledgeId['Id']);
                     $this->SalesforceService->paymentUpdateReference($paymentId, $transaction['transactionId']);
+                    $this->SalesforceService->allocationCreate($opportunityPledgeId['Id'],$transaction['transactionFee']);
                 }
             } else {
                 // create new Opp

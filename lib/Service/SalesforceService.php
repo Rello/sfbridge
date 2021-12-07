@@ -296,7 +296,7 @@ class SalesforceService
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
      */
-    private function allocationCreate($opportunityId, $fee)
+    public function allocationCreate($opportunityId, $fee)
     {
         if ($fee) {
             $data = [
