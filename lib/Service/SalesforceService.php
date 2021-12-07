@@ -71,9 +71,10 @@ class SalesforceService
     private function authCheck()
     {
         $token = $this->StoreService->getSecureToken(self::APPLICATION);
-        $this->accessToken = $token['accessToken'];
-        $this->instanceUrl = $token['instanceUrl'];
-        if (!$this->accessToken) {
+        if ($token !== false) {
+            $this->accessToken = $token['accessToken'];
+            $this->instanceUrl = $token['instanceUrl'];
+        } else {
             $newToken = $this->auth();
             $this->StoreService->setSecureToken(self::APPLICATION, $newToken['accessToken'], $newToken['instanceUrl']);
             $this->accessToken = $newToken['accessToken'];

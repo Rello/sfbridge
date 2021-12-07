@@ -36,7 +36,8 @@ class PageController extends Controller
     public function __construct(
         string $appName,
         IRequest $request,
-        LoggerInterface $logger,        IUserSession $userSession,
+        LoggerInterface $logger,
+        IUserSession $userSession,
         IConfig $config,
         IInitialState $initialState
     )

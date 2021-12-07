@@ -243,19 +243,6 @@ OCA.SFbridge.Compare = {
     },
 }
 
-OCA.SFbridge.Settings = {
-
-    getInitialState: function (key) {
-        const app = 'sfbridge';
-        const elem = document.querySelector(`#initial-state-${app}-${key}`)
-        if (elem === null) {
-            return false;
-        }
-        return JSON.parse(atob(elem.value))
-
-    }
-}
-
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('sfCompare').addEventListener('click', OCA.SFbridge.Compare.compare);
 });

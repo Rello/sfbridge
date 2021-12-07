@@ -121,6 +121,16 @@ OCA.SFbridge.Settings = {
         };
         xhr.send(params);
     },
+
+    getInitialState: function (key) {
+        const app = 'sfbridge';
+        const elem = document.querySelector(`#initial-state-${app}-${key}`)
+        if (elem === null) {
+            return false;
+        }
+        return JSON.parse(atob(elem.value))
+    }
+
 }
 
 document.addEventListener('DOMContentLoaded', function () {

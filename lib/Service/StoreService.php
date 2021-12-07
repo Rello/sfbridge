@@ -128,7 +128,7 @@ class StoreService
     public function set($token, $value)
     {
         $user = $this->UserSession->getUser();
-        $this->config->setUserValue($user->getUID(), 'sfbridge', $token, $value);
+        $this->config->setUserValue($user->getUID(), 'sfbridge', $token, var_export($value, true));
         return true;
     }
 

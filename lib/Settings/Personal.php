@@ -13,25 +13,35 @@ namespace OCA\SFbridge\Settings;
 
 use OCA\SFbridge\Service\StoreService;
 use OCP\AppFramework\Http\TemplateResponse;
+use OCP\AppFramework\Services\IInitialState;
+use OCP\IUserSession;
 use OCP\Settings\ISettings;
 use OCP\IConfig;
 
 class Personal implements ISettings
 {
-
     private $userId;
-    private $configManager;
+    /** @var IConfig */
+    protected $config;
     private $StoreService;
+    /** @var IUserSession */
+    private $userSession;
+    /** @var IInitialState */
+    protected $initialState;
 
     public function __construct(
         $userId,
-        IConfig $configManager,
-        StoreService $StoreService
+        IConfig $config,
+        StoreService $StoreService,
+        IUserSession $userSession,
+        IInitialState $initialState
     )
     {
         $this->userId = $userId;
-        $this->configManager = $configManager;
+        $this->config = $config;
         $this->StoreService = $StoreService;
+        $this->userSession = $userSession;
+        $this->initialState = $initialState;
     }
 
     /**
@@ -42,6 +52,12 @@ class Personal implements ISettings
     {
         $paypal = $this->StoreService->getSecureParameter('paypal');
         $salesforce = $this->StoreService->getSecureParameter('salesforce');
+
+        $user = $this->userSession->getUser();
+        $this->initialState->provideInitialState(
+            'background',
+            $this->config->getUserValue($user->getUID(), 'sfbridge', 'background', false)
+        );
 
         $parameters = [
             'paypal_client_id' => $paypal['client_id']?? null,
