@@ -1,5 +1,5 @@
 ![Bildschirmfoto 2021-12-04 um 16 37 58](https://user-images.githubusercontent.com/13385119/144723412-df0b2d76-2c2d-483f-ba77-14527fc80683.png)
-This automation bridges the gap between Paypal and the Salesforce solution for non-profit organizations.<br><br>
+This automation in Nextcloud bridges the gap between Paypal and the Salesforce solution for non-profit organizations.<br><br>
 All Paypal transactions like donations or payments will be automatically synchronized with the Salesforce Nonprofit Success Pack (NPSP).<br>
 New Contacts/Accounts will be crated if not existing. New Opportunities will be created or updated (recurring donations).
 

@@ -2,9 +2,9 @@
 <info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
 	<id>sfbridge</id>
     <name>Salesforce Bridge</name>
-    <summary>...</summary>
+    <summary>Sync Paypal/Bank to Salesforce</summary>
 	<description><![CDATA[
-This automation bridges the gap between Paypal and the Salesforce solution for non-profit organizations.
+This automation in Nextcloud bridges the gap between Paypal and the Salesforce solution for non-profit organizations.
 All Paypal transactions like donations or payments will be automatically synchronized with the Salesforce Nonprofit Success Pack (NPSP).
 New Contacts/Accounts will be crated if not existing. New Opportunities will be created or updated (recurring donations).
 
