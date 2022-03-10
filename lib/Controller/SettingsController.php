@@ -66,17 +66,6 @@ class SettingsController extends Controller
     }
 
     /**
-     * get Paypal parameters
-     *
-     * @NoAdminRequired
-     * @return DataResponse
-     */
-    public function getParameterPaypal()
-    {
-        return new DataResponse($this->StoreService->getSecureParameter('paypal'));
-    }
-
-    /**
      * set Salesforce parameters
      *
      * @NoAdminRequired
@@ -99,14 +88,20 @@ class SettingsController extends Controller
     }
 
     /**
-     * get Salesforce parameters
+     * set Bank parameters
      *
      * @NoAdminRequired
+     * @param $excludes
+     * @param $texts
      * @return DataResponse
      */
-    public function getParameterSalesforce()
+    public function setParameterBank($excludes, $texts)
     {
-        return new DataResponse($this->StoreService->getSecureParameter('salesforce'));
+        $parameter = [
+            'excludes' => $excludes,
+            'texts' => $texts,
+        ];
+        return new DataResponse($this->StoreService->setSecureParameter('bank', $parameter));
     }
 
 }

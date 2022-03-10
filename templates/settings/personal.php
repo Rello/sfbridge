@@ -10,6 +10,7 @@
  */
 
 use OCP\Util;
+
 Util::addScript('sfbridge', 'settings/personal');
 Util::addScript('sfbridge', 'userGuidance');
 ?>
@@ -17,44 +18,104 @@ Util::addScript('sfbridge', 'userGuidance');
 <div class="section">
     <h2><?php p($l->t('Paypal Settings')); ?></h2>
     <div style="display: table;">
+        <div style="display: table-row;">
+            <div style="display: table-cell; width: 200px;">
+                <label for="paypal_client_id"><?php p($l->t('Paypal Client Id')); ?></label>
+            </div>
+            <div style="display: table-cell;">
+                <input type="text" id="paypal_client_id" value="<?php p($_['paypal_client_id']); ?>"
+                       style="width: 600px;"/>
+            </div>
+        </div>
+        <div style="display: table-row;">
+            <div style="display: table-cell; width: 200px;">
 
-        <label for="paypal_client_id"><?php p($l->t('paypal_client_id')); ?>:</label>
-        <input type="text" id="paypal_client_id" value="<?php p($_['paypal_client_id']); ?>" style="width: 600px;"/>
-        <br>
-        <label for="paypal_client_secret"><?php p($l->t('paypal_client_secret')); ?>:</label>
-        <input type="text" id="paypal_client_secret" value="<?php p($_['paypal_client_secret']); ?>" style="width: 600px;"/>
-        <br>
-        <label for="paypal_instanceUrl"><?php p($l->t('paypal_instanceUrl')); ?>:</label>
-        <input type="text" id="paypal_instanceUrl" value="<?php p($_['paypal_instanceUrl']); ?>" style="width: 300px;"/>
-        <br>
-        <button id="paypal_save" type="button" class="primary">
-            <?php p($l->t('Save')); ?>
-        </button>
+                <label for="paypal_client_secret"><?php p($l->t('Paypal Client Secret')); ?></label>
+            </div>
+            <div style="display: table-cell;">
+                <input type="text" id="paypal_client_secret" value="<?php p($_['paypal_client_secret']); ?>"
+                       style="width: 600px;"/>
+            </div>
+        </div>
+        <div style="display: table-row;">
+            <div style="display: table-cell; width: 200px;">
+                <label for="paypal_instanceUrl"><?php p($l->t('Paypal Instance URL')); ?></label>
+            </div>
+            <div style="display: table-cell;">
+                <input type="text" id="paypal_instanceUrl" value="<?php p($_['paypal_instanceUrl']); ?>"
+                       style="width: 300px;"/>
+            </div>
+        </div>
     </div>
+    <button id="savePaypal" type="button" class="primary">
+        <?php p($l->t('Save')); ?>
+    </button>
 </div>
 
 <div class="section">
     <h2><?php p($l->t('Salesforce Settings')); ?></h2>
-    <div>
-        <label for="salesforce_client_id"><?php p($l->t('salesforce_client_id')); ?>:</label>
-        <input type="text" id="salesforce_client_id" value="<?php p($_['salesforce_client_id']); ?>" style="width: 600px;"/>
-        <br>
-        <label for="salesforce_client_secret"><?php p($l->t('salesforce_client_secret')); ?>:</label>
-        <input type="text" id="salesforce_client_secret" value="<?php p($_['salesforce_client_secret']); ?>" style="width: 600px;"/>
-        <br>
-        <label for="salesforce_username"><?php p($l->t('salesforce_username')); ?>:</label>
-        <input type="text" id="salesforce_username" value="<?php p($_['salesforce_username']); ?>" style="width: 300px;"/>
-        <br>
-        <label for="salesforce_password"><?php p($l->t('salesforce_password')); ?>:</label>
-        <input type="text" id="salesforce_password" value="<?php p($_['salesforce_password']); ?>" style="width: 300px;"/>
-        Password + Security Token!
-        <br>
-        <button id="salesforce_save" type="button" class="primary">
-            <?php p($l->t('Save')); ?>
-        </button>
+    <div style="display: table;">
+        <div style="display: table-row;">
+            <div style="display: table-cell; width: 200px;">
+                <label for="salesforce_client_id"><?php p($l->t('Salesforce Client Id')); ?></label>
+            </div>
+            <div style="display: table-cell;">
+                <input type="text" id="salesforce_client_id" value="<?php p($_['salesforce_client_id']); ?>"
+                       style="width: 600px;"/>
+            </div>
+        </div>
+        <div style="display: table-row;">
+            <div style="display: table-cell; width: 200px;">
+                <label for="salesforce_client_secret"><?php p($l->t('Salesforce Client Secret')); ?></label>
+            </div>
+            <div style="display: table-cell;">
+                <input type="text" id="salesforce_client_secret" value="<?php p($_['salesforce_client_secret']); ?>"
+                       style="width: 600px;"/>
+            </div>
+        </div>
+        <div style="display: table-row;">
+            <div style="display: table-cell; width: 200px;">
+                <label for="salesforce_username"><?php p($l->t('Salesforce Username')); ?></label>
+            </div>
+            <div style="display: table-cell;">
+                <input type="text" id="salesforce_username" value="<?php p($_['salesforce_username']); ?>"
+                       style="width: 300px;"/>
+            </div>
+        </div>
+        <div style="display: table-row;">
+            <div style="display: table-cell; width: 200px;">
+                <label for="salesforce_password"><?php p($l->t('Salesforce Password')); ?></label>
+            </div>
+            <div style="display: table-cell;">
+                <input type="text" id="salesforce_password" value="<?php p($_['salesforce_password']); ?>"
+                       style="width: 300px;"/>
+                Password + Security Token!
+            </div>
+        </div>
     </div>
+    <button id="saveSalesforce" type="button" class="primary">
+        <?php p($l->t('Save')); ?>
+    </button>
 </div>
-<br>
+
 <div class="section">
-    <input type="checkbox" id="sfBackground" class="checkbox"><label for="sfBackground">Daily Background Check (no update)</label>
+    <h2><?php p($l->t('Bank Settings')); ?></h2>
+    <input type="text" id="sfBankExcludes" value="<?php p($_['bank_excludes']); ?>" style="width: 300px;">
+    <p>
+        <em><?php p($l->t('A list of bank transaction senders, which will be excluded from processing. Separate them with ";"')); ?></em>
+    </p>
+    <br>
+    <input type="text" id="sfBankTexts" value="<?php p($_['bank_texts']); ?>" style="width: 300px;">
+    <p>
+        <em><?php p($l->t('Transaction texts to be excluded. Separate them with ";"')); ?></em>
+    </p>
+    <button id="saveBank" type="button" class="primary">
+        <?php p($l->t('Save')); ?>
+    </button>
 </div>
+
+<div class="section">
+    <input type="checkbox" id="sfBackground" class="checkbox"><label for="sfBackground">Daily Background Check (no
+        update)</label>
+</div>
+

@@ -3,24 +3,28 @@ This automation bridges the gap between Paypal and the Salesforce solution for n
 All Paypal transactions like donations or payments will be automatically synchronized with the Salesforce Nonprofit Success Pack (NPSP).<br>
 New Contacts/Accounts will be crated if not existing. New Opportunities will be created or updated (recurring donations).
 
-The job can be run in the background and will notify the user if new transactions are available in Paypal.
+The job can be run in the background and will use Nextcloud notificatoins if new transactions are available in Paypal.
 <p align="center">
 <img src="https://raw.githubusercontent.com/Rello/sfbridge/master/screenshots/app2.png" alt="Main" width="300" title="SFBridge">
 <img src="https://raw.githubusercontent.com/Rello/sfbridge/master/screenshots/settings2.png" alt="Main" width="300" title="SFBridge">
 </p>
 
+By using the API for csv data, bank accounts can also be synced (e.g. via the file export of MoneyMoney)
+
 ## Features
 - No customer data is stored (data privacy)
 - Paypal: Read transaction history
+- Bank (via API): Read transaction history
 - Salesforce: Create Household/Organization accounts
 - Salesforce: Create/update Opportunities/Payments/Allocations
+- Salesforce: Link Opportunities to Campaigns
 - Simulation mode before updating
 - Automated search for new transactions via Nextcloud background job
 - Nextcloud Notifications for new transactions
 
 ## Prerequisites
 - Salesforce Nonprofit Success Pack (NPSP)
-- API user in Saleforce
+- API user in Salesforce
 - oAuth "connected app" in Salesforce enabled
 - API user in Paypal
 

@@ -47,7 +47,6 @@ class SalesforceService
      */
     public function auth(): array
     {
-
         $parameter = $this->StoreService->getSecureParameter(self::APPLICATION);
 
         $salesforce = new PasswordAuthentication($parameter);
@@ -72,11 +71,14 @@ class SalesforceService
     {
         $token = $this->StoreService->getSecureToken(self::APPLICATION);
         if ($token !== false) {
+            $this->logger->info('Salesforce token still valid');
             $this->accessToken = $token['accessToken'];
             $this->instanceUrl = $token['instanceUrl'];
         } else {
+            $this->logger->info('Salesforce token renew requested');
             $newToken = $this->auth();
-            $this->StoreService->setSecureToken(self::APPLICATION, $newToken['accessToken'], $newToken['instanceUrl']);
+            $validity = time() + (60 * 60 * 2);
+            $this->StoreService->setSecureToken(self::APPLICATION, $newToken['accessToken'], $newToken['instanceUrl'], $validity);
             $this->accessToken = $newToken['accessToken'];
             $this->instanceUrl = $newToken['instanceUrl'];
         }
@@ -228,11 +230,14 @@ class SalesforceService
      * @param $date
      * @param $paypalId
      * @param $isNewContact
+     * @param $campaignId
+     * @param $transactionNote
+     * @param $paymentMethod
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
      */
-    public function opportunityCreate($contactId, $name, $accountId, $amount, $fee, $date, $paypalId, $isNewContact)
+    public function opportunityCreate($contactId, $name, $accountId, $amount, $fee, $date, $paypalId, $isNewContact, $campaignId, $transactionNote, $paymentMethod)
     {
 
         $data = [
@@ -243,26 +248,31 @@ class SalesforceService
             'RecordTypeId' => '01209000001L14YAAS',
             'StageName' => 'Closed Won',
             'CloseDate' => $date,
+            'Description' => $transactionNote
         ];
         if ($isNewContact && $amount > 0) {
             $data['npsp__Acknowledgment_Status__c'] = 'To Be Acknowledged';
-            $data['npsp__Acknowledgment_Date__c'] = $date;
+            //$data['npsp__Acknowledgment_Date__c'] = $date;
+        }
+
+        if ($campaignId) {
+            $data['CampaignId'] = $campaignId;
         }
 
         $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
         $opportunityId = $salesforceFunctions->create('Opportunity', $data);
 
-        // Get PaymentId from OpportunityId
+        // Get PaymentId from OpportunityId; it is available for pre-created Opps like recurring
         $paymentId = $this->paymentByOpportunityId($opportunityId);
 
         if ($paymentId) {
             // payment is existing => update the Paypal reference number
-            $this->paymentUpdateReference($paymentId, $paypalId);
+            $this->paymentUpdateReference($paymentId, $paypalId, $paymentMethod);
             // Create GAU transaction with paypal fee for Opportunity
             $this->allocationCreate($opportunityId, $fee);
         } else {
             // payment not existing. must be an expense booking
-            $this->paymentCreate($opportunityId, $paypalId, $amount, $date);
+            $this->paymentCreate($opportunityId, $paypalId, $amount, $date, $paymentMethod);
         }
         return $opportunityId;
     }
@@ -321,12 +331,12 @@ class SalesforceService
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
      */
-    private function paymentCreate($opportunityId, $paypalId, $amount, $date)
+    private function paymentCreate($opportunityId, $paypalId, $amount, $date, $method)
     {
         $data = [
             'npe01__Opportunity__c' => $opportunityId,
             'npe01__Check_Reference_Number__c' => $paypalId,
-            'npe01__Payment_Method__c' => 'Paypal',
+            'npe01__Payment_Method__c' => $method,
             'npe01__Payment_Amount__c' => $amount,
             'npe01__Paid__c' => 'true',
             'npe01__Payment_Date__c' => $date
@@ -339,16 +349,17 @@ class SalesforceService
      * update paypal transaction id in existing payment
      *
      * @param $paymentId
-     * @param $paypalId
+     * @param $referenceId
+     * @param $method
      * @return int
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
      */
-    public function paymentUpdateReference($paymentId, $paypalId)
+    public function paymentUpdateReference($paymentId, $referenceId, $method)
     {
         $data = [
-            'npe01__Check_Reference_Number__c' => $paypalId,
-            'npe01__Payment_Method__c' => 'Paypal',
+            'npe01__Check_Reference_Number__c' => $referenceId,
+            'npe01__Payment_Method__c' => $method,
         ];
         $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
         return $salesforceFunctions->update('npe01__OppPayment__c', $paymentId, $data);
@@ -374,4 +385,21 @@ class SalesforceService
         $paymentIds = array_column($paymentList['records'], 'npe01__Check_Reference_Number__c');
         return $paymentIds;
     }
+
+    /**
+     * search campains by paypal article item code
+     *
+     * @param $field
+     * @param $keyword
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function campaignByPaypalItem($item)
+    {
+        $query = 'SELECT Id, Name FROM Campaign WHERE PaypalArtikelName__c = \'' . $item . '\'';
+
+        $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
+        return $salesforceFunctions->query($query);
+    }
+
 }

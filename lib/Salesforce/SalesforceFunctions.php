@@ -109,18 +109,22 @@ class SalesforceFunctions
         $url = "{$this->instanceUrl}/services/data/{$this->apiVersion}/query";
 
         $client = new Client();
-        $request = $client->request(
-            'GET',
-            $url,
-            [
-                'headers' => [
-                    'Authorization' => "OAuth {$this->accessToken}"
-                ],
-                'query' => [
-                    'q' => $query
+        try {
+            $request = $client->request(
+                'GET',
+                $url,
+                [
+                    'headers' => [
+                        'Authorization' => "OAuth {$this->accessToken}"
+                    ],
+                    'query' => [
+                        'q' => $query
+                    ]
                 ]
-            ]
-        );
+            );
+        } catch (ClientException $e) {
+            throw SalesforceException::fromClientException($e);
+        }
 
         return json_decode($request->getBody(), true);
     }

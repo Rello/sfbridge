@@ -231,7 +231,7 @@ OCA.SFbridge.Compare = {
                     document.getElementById('sfOpportunitiesNew').value = JSON.stringify(data['new opportunities'], undefined, 4);
                     document.getElementById('sfOpportunitiesUpdate').value = JSON.stringify(data['updated opportunities'], undefined, 4);
                 } else {
-                    document.getElementById('sfCounts').value = 'Fehler ';
+                    document.getElementById('sfCounts').innerText = 'Fehler ';
                 }
 
                 button.classList.remove('loading');

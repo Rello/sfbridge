@@ -34,27 +34,27 @@ class Daily extends TimedJob
                                 CompareService $CompareService,
                                 StoreService $StoreService,
                                 IUserSession $UserSession,
-                                IUserManager $userManager
+                                IUserManager $UserManager
     )
     {
         parent::__construct($time);
-        $this->setInterval((60 * 60 * 6) - 120); // 2 minutes because exact times would drift to the next cron execution
+        $this->setInterval((60 * 60 * 2) - 120); // 2 minutes because exact times would drift to the next cron execution
         $this->logger = $logger;
         $this->CompareService = $CompareService;
         $this->StoreService = $StoreService;
         $this->UserSession = $UserSession;
-        $this->userManager = $userManager;
+        $this->UserManager = $UserManager;
     }
 
     public function run($arguments)
     {
         try {
-            $user = $this->userManager->get('admin');
+            $user = $this->UserManager->get('admin');
             $this->UserSession->setUser($user);
             $scheduled = $this->StoreService->get('background');
             if ($scheduled) {
                 $from = date('Y-m-d\T00:00', strtotime("-3 days"));
-                $to = date('Y-m-d\T00:00');
+                $to = date('Y-m-d\T00:00', strtotime("+1 day"));
                 $this->CompareService->compare(false, $from, $to, true);
             }
         } catch (\Exception $e) {

@@ -52,6 +52,7 @@ class Personal implements ISettings
     {
         $paypal = $this->StoreService->getSecureParameter('paypal');
         $salesforce = $this->StoreService->getSecureParameter('salesforce');
+        $bank = $this->StoreService->getSecureParameter('bank');
 
         $user = $this->userSession->getUser();
         $this->initialState->provideInitialState(
@@ -68,6 +69,9 @@ class Personal implements ISettings
             'salesforce_client_secret' => $salesforce['client_secret']?? null,
             'salesforce_username' => $salesforce['username']?? null,
             'salesforce_password' => $salesforce['password']?? null,
+
+            'bank_excludes' => $bank['excludes']?? null,
+            'bank_texts' => $bank['texts']?? null,
         ];
         return new TemplateResponse('sfbridge', 'settings/personal', $parameters, '');
     }

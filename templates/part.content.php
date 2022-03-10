@@ -50,7 +50,7 @@
 -->
 
     <input id="sfFrom" type="datetime-local" value="<?php echo date('Y-m-d\T00:00', strtotime("-3 days")); ?>" style="width: 200px;">
-    <input id="sfTo" type="datetime-local" value="<?php echo date('Y-m-d\T00:00'); ?>" style="width: 200px;">
+    <input id="sfTo" type="datetime-local" value="<?php echo date('Y-m-d\T00:00', strtotime("+1 day")); ?>" style="width: 200px;">
     <button id="sfCompare" type="button" class="primary">
         <?php p($l->t('Start')); ?>
     </button> <input type="checkbox" id="sfLiveRun" class="checkbox"><label for="sfLiveRun">Update!</label>

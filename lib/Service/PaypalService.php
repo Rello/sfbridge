@@ -70,7 +70,8 @@ class PaypalService
             throw SalesforceAuthenticationException::fromClientException($e);
         }
         $response = json_decode($request->getBody(), true);
-        return ['accessToken' => $response['access_token']];
+        return ['accessToken' => $response['access_token'],
+            'expires_in' => $response['expires_in']];
     }
 
     /**
@@ -83,14 +84,18 @@ class PaypalService
     {
         $token = $this->StoreService->getSecureToken(self::APPLICATION);
         $parameter = $this->StoreService->getSecureParameter(self::APPLICATION);
+        $this->instanceUrl = $parameter['instanceUrl'];
         if ($token !== false) {
+            $this->logger->info('Paypal token still valid');
             $this->accessToken = $token['accessToken'];
-            $this->instanceUrl = $parameter['instanceUrl'];
         } else {
+            $this->logger->info('Paypal token renew requested');
             $newToken = $this->auth();
-            $this->StoreService->setSecureToken(self::APPLICATION, $newToken['accessToken'], null);
+            $validity = time() + $newToken['expires_in'];
+            $this->StoreService->setSecureToken(self::APPLICATION, $newToken['accessToken'], null, $validity);
             $this->accessToken = $newToken['accessToken'];
         }
+        return true;
     }
 
     /**
@@ -105,12 +110,12 @@ class PaypalService
      */
     public function transactions($start, $end, $type)
     {
-        $this->authCheck();
+        $auth = $this->authCheck();
 
         $params = [
             'start_date' => $start,
             'end_date' => $end,
-            'fields' => 'payer_info',
+            'fields' => 'payer_info,cart_info',
             'transaction_status' => 'S',
             'transaction_type' => $type
         ];

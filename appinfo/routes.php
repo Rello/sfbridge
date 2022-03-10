@@ -33,11 +33,14 @@ return [
 
         ['name' => 'settings#background', 'url' => '/background', 'verb' => 'POST'],
 
-        ['name' => 'settings#getParameterPaypal', 'url' => '/settings/paypal', 'verb' => 'GET'],
         ['name' => 'settings#setParameterPaypal', 'url' => '/settings/paypal', 'verb' => 'POST'],
-        ['name' => 'settings#getParameterSalesforce', 'url' => '/settings/salesforce', 'verb' => 'GET'],
         ['name' => 'settings#setParameterSalesforce', 'url' => '/settings/salesforce', 'verb' => 'POST'],
+        ['name' => 'settings#setParameterBank', 'url' => '/settings/bank', 'verb' => 'POST'],
 
+        // API
+        // V1
+        ['name' => 'ApiData#preflighted_cors', 'url' => '/api/1.0/{path}', 'verb' => 'OPTIONS', 'requirements' => ['path' => '.+']],
+        ['name' => 'ApiData#addData', 'url' => '/api/1.0/adddata', 'verb' => 'POST'],
 
     ]
 ];

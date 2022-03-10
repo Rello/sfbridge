@@ -59,9 +59,8 @@ class PaypalController extends Controller
      */
     public function transactions(): DataResponse
     {
-        $start = '2021-11-04T00:00:00-0700';
-        $end = '2021-11-10T23:59:59-0700';
-
+        $start = '2021-12-06T00:00:00-0700';
+        $end = '2021-12-10T23:59:59-0700';
         return new DataResponse($this->PaypalService->transactions($start, $end, null));
     }
 

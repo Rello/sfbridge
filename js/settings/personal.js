@@ -41,7 +41,7 @@ OCA.SFbridge.Settings = {
         xhr.send(params);
     },
 
-    getPaypal: function () {
+    getPaypal_backup: function () {
         let xhr = new XMLHttpRequest();
         xhr.open('GET', OC.generateUrl('apps/sfbridge/settings/paypal', true));
         xhr.setRequestHeader('requesttoken', OC.requestToken);
@@ -82,9 +82,12 @@ OCA.SFbridge.Settings = {
         xhr.send(params);
     },
 
-    getSalesforce: function () {
+    setBank: function () {
+        let params = 'excludes=' + document.getElementById('sfBankExcludes').value
+            + '&texts=' + document.getElementById('sfBankTexts').value;
+
         let xhr = new XMLHttpRequest();
-        xhr.open('GET', OC.generateUrl('apps/sfbridge/settings/salesforce', true));
+        xhr.open('POST', OC.generateUrl('apps/sfbridge/settings/bank', true));
         xhr.setRequestHeader('requesttoken', OC.requestToken);
         xhr.setRequestHeader('OCS-APIREQUEST', 'true');
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=UTF-8');
@@ -92,11 +95,13 @@ OCA.SFbridge.Settings = {
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
-                    let data = JSON.parse(xhr.response);
+                    OCA.SFbridge.Notification.notification('success', t('sfbridge', 'Saved'));
+                } else {
+                    OCA.SFbridge.Notification.notification('error', t('sfbridge', 'Error'));
                 }
             }
         };
-        xhr.send();
+        xhr.send(params);
     },
 
     background: function () {
@@ -134,8 +139,9 @@ OCA.SFbridge.Settings = {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('paypal_save').addEventListener('click', OCA.SFbridge.Settings.setPaypal);
-    document.getElementById('salesforce_save').addEventListener('click', OCA.SFbridge.Settings.setSalesforce);
+    document.getElementById('savePaypal').addEventListener('click', OCA.SFbridge.Settings.setPaypal);
+    document.getElementById('saveSalesforce').addEventListener('click', OCA.SFbridge.Settings.setSalesforce);
+    document.getElementById('saveBank').addEventListener('click', OCA.SFbridge.Settings.setBank);
     document.getElementById('sfBackground').addEventListener('click', OCA.SFbridge.Settings.background);
     document.getElementById('sfBackground').checked = OCA.SFbridge.Settings.getInitialState('background') === 'true';
 });

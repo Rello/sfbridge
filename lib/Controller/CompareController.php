@@ -42,7 +42,7 @@ class CompareController extends Controller
      */
     public function compare($update, $from, $to): DataResponse
     {
-        return new DataResponse($this->CompareService->compare($update, $from, $to));
+        return new DataResponse($this->CompareService->paypal($update, $from, $to));
     }
 
 }

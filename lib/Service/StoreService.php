@@ -58,8 +58,7 @@ class StoreService
     {
         $user = $this->UserSession->getUser();
         $auth = $this->credentialsManager->retrieve($user->getUID(), self::appName . ':' . $application . 'Token');
-        $compare = time() - (60 * 60 * 2);
-        if ($auth['validity'] > $compare) {
+        if (isset($auth['validity']) && (int)$auth['validity'] > time()) {
             return $auth;
         } else {
             return false;
@@ -72,19 +71,22 @@ class StoreService
      * @param $application
      * @param $token
      * @param $instanceUrl
+     * @param $validity
      * @return bool
      */
-    public function setSecureToken($application, $token, $instanceUrl)
+    public function setSecureToken($application, $token, $instanceUrl, $validity = false)
     {
+        if (!$validity) {
+            $validity = time() + (60 * 60 * 2);
+        }
         $user = $this->UserSession->getUser();
         $this->credentialsManager->store($user->getUID(), self::appName . ':' . $application . 'Token', [
             'accessToken' => $token,
             'instanceUrl' => $instanceUrl,
-            'validity' => time(),
+            'validity' => $validity,
         ]);
         return true;
     }
-
 
     //
     // Get standard connection parameters
@@ -132,6 +134,11 @@ class StoreService
         return true;
     }
 
+    public function get($token)
+    {
+        $user = $this->UserSession->getUser();
+        return $this->config->getUserValue($user->getUID(), 'sfbridge', $token, false);
+    }
     /**
      * backup; not used
      */
