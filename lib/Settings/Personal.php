@@ -70,8 +70,9 @@ class Personal implements ISettings
             'salesforce_username' => $salesforce['username']?? null,
             'salesforce_password' => $salesforce['password']?? null,
 
+            'bank_replaceName' => $bank['replaceName']?? null,
             'bank_excludes' => $bank['excludes']?? null,
-            'bank_texts' => $bank['texts']?? null,
+            'bank_searchText' => $bank['searchText']?? null,
         ];
         return new TemplateResponse('sfbridge', 'settings/personal', $parameters, '');
     }

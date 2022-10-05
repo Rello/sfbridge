@@ -84,7 +84,8 @@ OCA.SFbridge.Settings = {
 
     setBank: function () {
         let params = 'excludes=' + document.getElementById('sfBankExcludes').value
-            + '&texts=' + document.getElementById('sfBankTexts').value;
+            + '&searchText=' + document.getElementById('sfBankTexts').value
+            + '&replaceName=' + document.getElementById('sfBankName').value;;
 
         let xhr = new XMLHttpRequest();
         xhr.open('POST', OC.generateUrl('apps/sfbridge/settings/bank', true));

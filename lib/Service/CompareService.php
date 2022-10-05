@@ -90,6 +90,7 @@ class CompareService
 
         $transactionsLined = $this->harmonizeBankTransactions($transactions);
         $transactionsLined = $this->excludeBankTransactions($transactionsLined);
+        $transactionsLined = $this->replaceBankTransactions($transactionsLined);
 
         //$this->logger->error(json_encode($transactionsLined));
         //return json_encode($transactionsLined);
@@ -173,6 +174,7 @@ class CompareService
 
             if ($opportunityPledgeId) {
                 // Opportunity is a recurring pledge. Update Status "Closed Won"
+                $this->logger->info('Pledge to be updated: '. $opportunityPledgeId['Name'].$opportunityPledgeId['Id']);
                 $this->opportunitiesUpdateCount++;
                 array_push($opportunitiesUpdate, $opportunityPledgeId['Name']);
                 if ($this->update) {
@@ -226,14 +228,14 @@ class CompareService
                 $contact = $this->SalesforceService->contactSearch('Email', $transaction['payerEmail']);
             } else {
                 $contact = $this->SalesforceService->contactSearch('Name', $transaction['payerAlternateName']);
-                $this->logger->info('AlternateName: '.$transaction['payerAlternateName']);
-                $this->logger->info('MatchSize: '.$contact['totalSize']);
+                $this->logger->info('Search by AlternateName: '.$transaction['payerAlternateName']);
+                $this->logger->info('Number of matches: '.$contact['totalSize']);
             }
+            //$contact['totalSize'] = 0;
             if ($contact['totalSize'] === 0) {
                 $this->contactsNewCount++;
-                array_push($contactsNew, $transaction['payerAlternateName'] . ' ' . $transaction['payerEmail']);
                 if ($this->update) {
-                    $this->logger->info('New Contact: '.$transaction['payerGivenName'] . '-' . $transaction['payerSurName'] . '-' . $transaction['payerAlternateName']);
+                    $this->logger->info('New Contact to be created: '.$transaction['payerGivenName'] . '-' . $transaction['payerSurName'] . '-' . $transaction['payerAlternateName']);
                     $newContact = $this->SalesforceService->contactCreate($transaction['payerGivenName'], $transaction['payerSurName'], $transaction['payerAlternateName'], $transaction['payerEmail']);
                     $transaction['contactId'] = $newContact['contactId'];
                     $transaction['accountId'] = $newContact['accountId'];
@@ -243,6 +245,8 @@ class CompareService
                     $transaction['contactId'] = '000000000000000000';
                     $transaction['accountId'] = '000000000000000000';
                 }
+                // plain texts for the info text box
+                array_push($contactsNew, $transaction['payerAlternateName'] . ' ' . $transaction['payerEmail']);
             } else {
                 $transaction['contactId'] = $contact['records'][0]['Id'];
                 $transaction['accountId'] = $contact['records'][0]['AccountId'];
@@ -393,11 +397,30 @@ class CompareService
     {
         $bank = $this->StoreService->getSecureParameter('bank');
         $excludes = explode(';', $bank['excludes']);
-        $texts = explode(';', $bank['texts']);
 
         foreach ($transactions as $key => &$transaction) {
-            if (in_array($transaction['payerAlternateName'], $excludes) OR in_array($transaction['transactionNote'], $texts)) {
+            if (in_array($transaction['payerAlternateName'], $excludes)) {
                 unset($transactions[$key]);
+            }
+        }
+        return $transactions;
+    }
+
+    /**
+     * search for a matching text and replace the account name
+     *
+     * @param $transactions
+     * @return array
+     */
+    private function replaceBankTransactions($transactions): array
+    {
+        $bank = $this->StoreService->getSecureParameter('bank');
+        $searchText = $bank['searchText'];
+        $replaceName = $bank['replaceName'];
+
+        foreach ($transactions as &$transaction) {
+            if ($transaction['transactionNote'] === $searchText) {
+                $transaction['payerAlternateName'] = $replaceName;
             }
         }
         return $transactions;

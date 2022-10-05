@@ -92,14 +92,16 @@ class SettingsController extends Controller
      *
      * @NoAdminRequired
      * @param $excludes
-     * @param $texts
+     * @param $searchText
+     * @param $replaceName
      * @return DataResponse
      */
-    public function setParameterBank($excludes, $texts)
+    public function setParameterBank($excludes, $searchText, $replaceName)
     {
         $parameter = [
             'excludes' => $excludes,
-            'texts' => $texts,
+            'searchText' => $searchText,
+            'replaceName' => $replaceName,
         ];
         return new DataResponse($this->StoreService->setSecureParameter('bank', $parameter));
     }

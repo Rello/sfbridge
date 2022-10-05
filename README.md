@@ -36,7 +36,7 @@ By using the API for csv data, bank accounts can also be synced (e.g. via the fi
 
 ## Support
 Thank you to PhpStorm from [JetBrains](https://www.jetbrains.com/?from=AudioPlayerforNextcloudandownCloud) <br>
-<img src="https://raw.githubusercontent.com/rello/data/master/screenshots/jetbrains.svg" alt="Main" width="100" title="Salesforce Bridge">
+<img src="https://raw.githubusercontent.com/rello/analytics/master/screenshots/jetbrains.svg" alt="Main" width="100" title="Salesforce Bridge">
 
 ---
 [![Version](https://img.shields.io/github/release/rello/sfbridge.svg)](https://github.com/rello/sfbridge/blob/master/CHANGELOG.md)&#160;[![License: AGPLv3](https://img.shields.io/badge/license-AGPLv3-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)&#160;&#160;&#160;[![Bitcoin](https://img.shields.io/badge/donate-Bitcoin-blue.svg)](https://github.com/rello/audioplayer/wiki/donate)&#160;[![PayPal](https://img.shields.io/badge/donate-PayPal-blue.svg)](https://github.com/rello/audioplayer/wiki/donate)

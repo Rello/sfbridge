@@ -69,6 +69,8 @@ class SalesforceService
      */
     private function authCheck()
     {
+        $parameter = $this->StoreService->getSecureParameter(self::APPLICATION);
+
         $token = $this->StoreService->getSecureToken(self::APPLICATION);
         if ($token !== false) {
             $this->logger->info('Salesforce token still valid');
@@ -180,7 +182,7 @@ class SalesforceService
     }
 
     /**
-     * search for opportunities type pledge
+     * search for open opportunities of type pledge
      *
      * @param $contactId
      * @param $amount
@@ -189,8 +191,8 @@ class SalesforceService
      */
     public function opportunityPledgeSearch($contactId, $amount)
     {
-        $query = 'SELECT Id, Name FROM Opportunity WHERE StageName = \'Pledged\' AND ContactId = \'' . $contactId . '\' AND Amount = ' . $amount;
-
+        // in case several pledges already exist for the future, the oldest one will be used
+        $query = 'SELECT Id, Name FROM Opportunity WHERE StageName = \'Pledged\' AND ContactId = \'' . $contactId . '\' AND Amount = ' . $amount . ' ORDER BY CloseDate ASC';
         $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
         $opportunity = $salesforceFunctions->query($query);
         if ($opportunity['totalSize'] !== 0) {

@@ -105,10 +105,12 @@ Util::addScript('sfbridge', 'userGuidance');
         <em><?php p($l->t('A list of bank transaction senders, which will be excluded from processing. Separate them with ";"')); ?></em>
     </p>
     <br>
-    <input type="text" id="sfBankTexts" value="<?php p($_['bank_texts']); ?>" style="width: 300px;">
+    <input type="text" id="sfBankName" value="<?php p($_['bank_replaceName']); ?>" style="width: 300px;">
     <p>
-        <em><?php p($l->t('Transaction texts to be excluded. Separate them with ";"')); ?></em>
+        <em><?php p($l->t('Name of the Bank that will be used, when the following transaction text is found:')); ?></em>
     </p>
+    <input type="text" id="sfBankTexts" value="<?php p($_['bank_searchText']); ?>" style="width: 300px;">
+    <br><br>
     <button id="saveBank" type="button" class="primary">
         <?php p($l->t('Save')); ?>
     </button>
