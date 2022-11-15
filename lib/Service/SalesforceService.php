@@ -11,6 +11,8 @@
 
 namespace OCA\SFbridge\Service;
 
+use GuzzleHttp\Exception\GuzzleException;
+use OCA\SFbridge\Salesforce\Exception\SalesforceException;
 use Psr\Log\LoggerInterface;
 use OCA\SFbridge\Salesforce\Authentication\PasswordAuthentication;
 use OCA\SFbridge\Salesforce\SalesforceFunctions;
@@ -206,15 +208,17 @@ class SalesforceService
      * update opportunity type pledge
      *
      * @param $id
+     * @param $date
      * @return mixed
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
+     * @throws GuzzleException
+     * @throws SalesforceException
      */
-    public function opportunityPledgeUpdate($id)
+    public function opportunityPledgeUpdate($id, $date)
     {
         // Update pledge to status Closed Won
         $data = [
             'StageName' => 'Closed Won',
+            'CloseDate' => $date,
         ];
         $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
         $pledgeId = $salesforceFunctions->update('Opportunity', $id, $data);

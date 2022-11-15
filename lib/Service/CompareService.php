@@ -178,7 +178,7 @@ class CompareService
                 $this->opportunitiesUpdateCount++;
                 array_push($opportunitiesUpdate, $opportunityPledgeId['Name']);
                 if ($this->update) {
-                    $this->SalesforceService->opportunityPledgeUpdate($opportunityPledgeId['Id']);
+                    $this->SalesforceService->opportunityPledgeUpdate($opportunityPledgeId['Id'], $transaction['transactionDate']);
                     $paymentId = $this->SalesforceService->paymentByOpportunityId($opportunityPledgeId['Id']);
                     $this->SalesforceService->paymentUpdateReference($paymentId, $transaction['transactionId'], $transaction['paymentMethod']);
                     $this->SalesforceService->allocationCreate($opportunityPledgeId['Id'],$transaction['transactionFee']);
@@ -320,8 +320,8 @@ class CompareService
 
             $payerInfo = $transaction['payer_info'];
             $line['payerEmail'] = $payerInfo['email_address'] ?? null;
-            $line['payerGivenName'] = $payerInfo['payer_name']['given_name'] ?? null;
-            $line['payerSurName'] = $payerInfo['payer_name']['surname'] ?? null;
+            $line['payerGivenName'] = substr($payerInfo['payer_name']['given_name'],0,40) ?? null;
+            $line['payerSurName'] = substr($payerInfo['payer_name']['surname'],0,40) ?? null;
             $line['payerAlternateName'] = $payerInfo['payer_name']['alternate_full_name'] ?? null;
             $line['payerIBAN'] = null;
 
@@ -374,8 +374,8 @@ class CompareService
             $line['transactionNote'] = $row[4];
 
             $line['payerEmail'] = null;
-            $line['payerSurName'] = (int)$line['transactionAmount'] > 0 ? array_pop($nameArray) : null;
-            $line['payerGivenName'] = (int)$line['transactionAmount'] > 0 ? implode(' ', $nameArray) : null;
+            $line['payerSurName'] = (int)$line['transactionAmount'] > 0 ? substr(array_pop($nameArray),0,40) : null;
+            $line['payerGivenName'] = (int)$line['transactionAmount'] > 0 ? substr(implode(' ', $nameArray),0,40) : null;
             $line['payerAlternateName'] = $row[3];
             $line['payerIBAN'] = $row[5];
 
