@@ -1,6 +1,8 @@
 # Changelog
 
 ## 0.1.0 - 2022-12-30
+- initial Nextcloud app store release
+
 ### Changed
 - store paypal transaction note in SF opp description
 

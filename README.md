@@ -1,8 +1,6 @@
 ![Bildschirmfoto 2021-12-04 um 16 37 58](https://user-images.githubusercontent.com/13385119/144723412-df0b2d76-2c2d-483f-ba77-14527fc80683.png)
 This automation in Nextcloud bridges the gap between financial transactions and Salesforce.<br>
-Paypal or bank transactions like donations or payments can be synchronized with the Salesforce Nonprofit Success Pack (NPSP).<br>
-Existing Contacts/Accounts will be matched or newly created on demand.<br>
-New Opportunities will be created or updated (recurring donations).<br>
+Donations/payments in Paypal or bank accounts can be synchronized with the Salesforce Nonprofit Success Pack (NPSP).<br>
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/Rello/sfbridge/master/screenshots/app2.png" alt="Main" width="300" title="SFBridge">
@@ -13,7 +11,7 @@ New Opportunities will be created or updated (recurring donations).<br>
 - No customer data is stored in Nextcloud (data privacy)
 - Paypal: Read transaction history
 - Bank (via API): Read transaction history
-- Salesforce: Create Household/Organization accounts
+- Salesforce: Create Household/Organization accounts on demand
 - Salesforce: Create/update Opportunities/Payments/Allocations
 - Salesforce: Link Opportunities to Campaigns
 - Nextcloud: Automation via background job
