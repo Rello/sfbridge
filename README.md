@@ -28,6 +28,9 @@ By using the API for csv data, bank accounts can also be synced (e.g. via the fi
 - API user in Paypal
 
 ## Installation
+<b>!Get in contact with me if you are interested in this app!<br>
+!It is working for us. Your setup might be different!<br>
+!I am interested to make it flexible for any usecase!</b><br>
 - [Nextcloud App Store](https://apps.nextcloud.com/apps/sfbridge)
 
 ## Maintainers

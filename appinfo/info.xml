@@ -18,6 +18,8 @@ New Opportunities will be created or updated (recurring donations).
 - Salesforce: Link Opportunities to Campaigns
 - Nextcloud: Automation via background job
 - Nextcloud: Notifications for new transactions
+
+##### Please check GitHub for details first!
 ]]></description>
     <version>0.1.0</version>
     <licence>agpl</licence>
