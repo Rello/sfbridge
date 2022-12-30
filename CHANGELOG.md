@@ -1,7 +1,6 @@
 # Changelog
 
-## 0
-
+## 0.1.0 - 2022-12-30
 ### Changed
 - store paypal transaction note in SF opp description
 
