@@ -1,26 +1,25 @@
 ![Bildschirmfoto 2021-12-04 um 16 37 58](https://user-images.githubusercontent.com/13385119/144723412-df0b2d76-2c2d-483f-ba77-14527fc80683.png)
-This automation in Nextcloud bridges the gap between Paypal and the Salesforce solution for non-profit organizations.<br><br>
-All Paypal transactions like donations or payments will be automatically synchronized with the Salesforce Nonprofit Success Pack (NPSP).<br>
-New Contacts/Accounts will be crated if not existing. New Opportunities will be created or updated (recurring donations).
+This automation in Nextcloud bridges the gap between financial transactions and Salesforce.<br>
+Paypal or bank transactions like donations or payments can be synchronized with the Salesforce Nonprofit Success Pack (NPSP).<br>
+Existing Contacts/Accounts will be matched or newly created on demand.<br>
+New Opportunities will be created or updated (recurring donations).<br>
 
-The job can be run in the background and will use Nextcloud notificatoins if new transactions are available in Paypal.
 <p align="center">
 <img src="https://raw.githubusercontent.com/Rello/sfbridge/master/screenshots/app2.png" alt="Main" width="300" title="SFBridge">
 <img src="https://raw.githubusercontent.com/Rello/sfbridge/master/screenshots/settings2.png" alt="Main" width="300" title="SFBridge">
 </p>
 
-By using the API for csv data, bank accounts can also be synced (e.g. via the file export of MoneyMoney)
-
 ## Features
-- No customer data is stored (data privacy)
+- No customer data is stored in Nextcloud (data privacy)
 - Paypal: Read transaction history
 - Bank (via API): Read transaction history
 - Salesforce: Create Household/Organization accounts
 - Salesforce: Create/update Opportunities/Payments/Allocations
 - Salesforce: Link Opportunities to Campaigns
-- Simulation mode before updating
-- Automated search for new transactions via Nextcloud background job
-- Nextcloud Notifications for new transactions
+- Nextcloud: Automation via background job
+- Nextcloud: Notifications for new transactions
+
+By using the API for csv data, bank accounts can also be synced (e.g. via the file export of MoneyMoney)
 
 ## Prerequisites
 - Salesforce Nonprofit Success Pack (NPSP)
