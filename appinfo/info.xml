@@ -6,14 +6,11 @@
 	<description><![CDATA[
 This automation in Nextcloud bridges the gap between financial transactions and Salesforce.
 Paypal or bank transactions like donations or payments can be synchronized with the Salesforce Nonprofit Success Pack (NPSP).
-Existing Contacts/Accounts will be matched or newly created on demand.
-New Opportunities will be created or updated (recurring donations).
 
 ##### Features
-- No customer data is stored in Nextcloud (data privacy)
 - Paypal: Read transaction history
 - Bank (via API): Read transaction history
-- Salesforce: Create Household/Organization accounts
+- Salesforce: Create Household/Organization accounts and contact on demand
 - Salesforce: Create/update Opportunities/Payments/Allocations
 - Salesforce: Link Opportunities to Campaigns
 - Nextcloud: Automation via background job

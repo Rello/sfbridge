@@ -7,11 +7,17 @@ Donations/payments in Paypal or bank accounts can be synchronized with the Sales
 <img src="https://raw.githubusercontent.com/Rello/sfbridge/master/screenshots/settings2.png" alt="Main" width="300" title="SFBridge">
 </p>
 
+## Benefits
+- Reduce manual efforts to enter transactions in salesforce
+- High quality of data (e.g. no duplicates)
+- Avoid user errors
+- No data is stored in Nextcloud (compliance to GPDR)
+- License free
+
 ## Features
-- No customer data is stored in Nextcloud (data privacy)
 - Paypal: Read transaction history
 - Bank (via API): Read transaction history
-- Salesforce: Create Household/Organization accounts on demand
+- Salesforce: Create Household/Organization accounts and contact on demand
 - Salesforce: Create/update Opportunities/Payments/Allocations
 - Salesforce: Link Opportunities to Campaigns
 - Nextcloud: Automation via background job
@@ -26,9 +32,9 @@ By using the API for csv data, bank accounts can also be synced (e.g. via the fi
 - API user in Paypal
 
 ## Installation
-<b>!Get in contact with me if you are interested in this app!<br>
-!It is working for us. Your setup might be different!<br>
-!I am interested to make it flexible for any usecase!</b><br>
+<b>! Get in contact with me if you are interested !<br>
+! It is working for us. Your setup might be different !<br>
+! I am interested to make it flexible for any usecase !</b><br>
 - [Nextcloud App Store](https://apps.nextcloud.com/apps/sfbridge)
 
 ## Maintainers
