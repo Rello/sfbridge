@@ -11,7 +11,7 @@
 
 use OCP\Util;
 
-Util::addScript('sfbridge', 'settings/personal');
+Util::addScript('sfbridge', 'settings/admin');
 Util::addScript('sfbridge', 'userGuidance');
 ?>
 

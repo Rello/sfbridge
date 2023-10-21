@@ -42,8 +42,8 @@ Paypal or bank transactions like donations or payments can be synchronized with 
         <nextcloud min-version="20" max-version="27"/>
     </dependencies>
     <settings>
-        <personal>OCA\SFbridge\Settings\Personal</personal>
-        <personal-section>OCA\SFbridge\Settings\PersonalSection</personal-section>
+        <admin>OCA\SFbridge\Settings\Admin</admin>
+        <admin-section>OCA\SFbridge\Settings\AdminSection</admin-section>
     </settings>
     <background-jobs>
         <job>OCA\SFbridge\BackgroundJob\Daily</job>

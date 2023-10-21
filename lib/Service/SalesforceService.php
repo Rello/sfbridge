@@ -71,8 +71,6 @@ class SalesforceService
      */
     private function authCheck()
     {
-        $parameter = $this->StoreService->getSecureParameter(self::APPLICATION);
-
         $token = $this->StoreService->getSecureToken(self::APPLICATION);
         if ($token !== false) {
             $this->logger->info('Salesforce token still valid');

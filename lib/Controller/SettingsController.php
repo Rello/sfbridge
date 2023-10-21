@@ -43,7 +43,7 @@ class SettingsController extends Controller
      */
     public function background($background = false)
     {
-        return new DataResponse($this->StoreService->set('background', $background));
+        return new DataResponse($this->StoreService->setBackground($background));
     }
 
     /**

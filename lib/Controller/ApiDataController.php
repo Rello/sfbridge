@@ -41,7 +41,7 @@ class ApiDataController extends ApiController
             $appName,
             $request,
             'POST'
-            );
+        );
         $this->logger = $logger;
         $this->userSession = $userSession;
         $this->CompareService = $CompareService;
@@ -59,13 +59,10 @@ class ApiDataController extends ApiController
     {
         $file = $this->request->getUploadedFile('file');
         $content = file_get_contents($file['tmp_name']);
-
         //$this->logger->error(json_encode($content));
-        $transactions = str_getcsv($content, "\n");  // split rows
-        $transactions = array_slice($transactions, 1); // remove header
 
         try {
-            $return = $this->CompareService->bank($transactions);
+            $return = $this->CompareService->bank($content);
             return $this->requestResponse(
                 true,
                 Http::STATUS_OK,
@@ -78,39 +75,6 @@ class ApiDataController extends ApiController
                 json_encode($e->getErrors())
             );
         }
-    }
-
-    /**
-     * create one dimensional transaction records with just the required fields
-     *
-     * @param $transactions
-     * @return array
-     */
-    private function harmonizeTransactions($transactions): array
-    {
-        $transactionsLined = array();
-        foreach ($transactions as $transaction) {
-            $row = str_getcsv($transaction, ';');
-
-            $line['transactionId'] = hash('md5', $row[0].$row[3].$row[4].$row[5].$row[7]);
-            $line['transactionType'] = null;
-            $line['transactionDate'] = $row[0];
-            $line['transactionAmount'] = $row[7];
-            $line['transactionFee'] = null;
-            $line['transactionNote'] = $row[4];
-
-            $line['payerEmail'] = null;
-            $line['payerGivenName'] = null;
-            $line['payerSurName'] = null;
-            $line['payerAlternateName'] = $row[3];
-            $line['payerIBAN'] = $row[5];
-
-            $line['itemCode'] = null;
-            $line['paymentMethod'] = 'Bank';
-
-            $transactionsLined[] = $line;
-        }
-        return $transactionsLined;
     }
 
     /**
@@ -141,4 +105,5 @@ class ApiDataController extends ApiController
         $response->setData($array)->render();
         return $response;
     }
+
 }

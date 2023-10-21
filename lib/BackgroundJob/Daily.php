@@ -51,7 +51,7 @@ class Daily extends TimedJob
         try {
             $user = $this->UserManager->get('admin');
             $this->UserSession->setUser($user);
-            $scheduled = $this->StoreService->get('background');
+            $scheduled = $this->StoreService->getBackground();
             if ($scheduled) {
                 $from = date('Y-m-d\T00:00', strtotime("-3 days"));
                 $to = date('Y-m-d\T00:00', strtotime("+1 day"));

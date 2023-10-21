@@ -14,6 +14,7 @@ namespace OCA\SFbridge\Service;
 use OCP\IUserSession;
 use Psr\Log\LoggerInterface;
 use OCP\IConfig;
+use OCP\Security\ICrypto;
 use OCP\Security\ICredentialsManager;
 
 class StoreService
@@ -24,6 +25,8 @@ class StoreService
     private $UserSession;
     /** @var ICredentialsManager */
     protected $credentialsManager;
+    /** @var ICrypto */
+    protected $crypto;
     private $userId;
     private $logger;
 
@@ -34,6 +37,7 @@ class StoreService
         LoggerInterface $logger,
         IConfig $config,
         IUserSession $UserSession,
+        ICrypto $crypto,
         ICredentialsManager $credentialsManager
     )
     {
@@ -42,22 +46,23 @@ class StoreService
         $this->config = $config;
         $this->UserSession = $UserSession;
         $this->credentialsManager = $credentialsManager;
+        $this->crypto = $crypto;
     }
 
-    //
-    // Secure Tokens - they are stored with a validity
-    //
-
     /**
+     * Secure token stored with a validity
      * get the valid token; will return false when the token validity i > 2hrs
      *
      * @param $application
      * @return false|mixed
+     * @throws \Exception
      */
     public function getSecureToken($application)
     {
-        $user = $this->UserSession->getUser();
-        $auth = $this->credentialsManager->retrieve($user->getUID(), self::appName . ':' . $application . 'Token');
+        $value = $this->config->getAppValue(self::appName, $application . 'Token');
+        if (!$value) return false;
+        $auth = json_decode($this->crypto->decrypt($value), true);
+
         if (isset($auth['validity']) && (int)$auth['validity'] > time()) {
             return $auth;
         } else {
@@ -66,7 +71,8 @@ class StoreService
     }
 
     /**
-     * store token with current timestamp
+     * Secure token stored with a validity
+     * set the token with current timestamp + 2hrs
      *
      * @param $application
      * @param $token
@@ -79,32 +85,34 @@ class StoreService
         if (!$validity) {
             $validity = time() + (60 * 60 * 2);
         }
-        $user = $this->UserSession->getUser();
-        $this->credentialsManager->store($user->getUID(), self::appName . ':' . $application . 'Token', [
+
+        $value = [
             'accessToken' => $token,
             'instanceUrl' => $instanceUrl,
             'validity' => $validity,
-        ]);
+        ];
+
+        $encrypted = $this->crypto->encrypt(json_encode($value));
+        $this->config->setAppValue(self::appName, $application . 'Token', $encrypted);
         return true;
     }
 
-    //
-    // Get standard connection parameters
-    //
-
     /**
+     * Connection parameters like secrets and passwords
      * get parameters for an application
      *
      * @param $application
      * @return mixed
+     * @throws \Exception
      */
     public function getSecureParameter($application)
     {
-        $user = $this->UserSession->getUser();
-        return $this->credentialsManager->retrieve($user->getUID(), self::appName . ':' . $application);
+        $value = $this->config->getAppValue(self::appName, $application);
+        return json_decode($this->crypto->decrypt($value), true);
     }
 
     /**
+     * Connection parameters like secrets and passwords
      * set parameters for an application
      *
      * @param $application
@@ -113,8 +121,8 @@ class StoreService
      */
     public function setSecureParameter($application, $parameter)
     {
-        $user = $this->UserSession->getUser();
-        $this->credentialsManager->store($user->getUID(), self::appName . ':' . $application, $parameter);
+        $encrypted = $this->crypto->encrypt(json_encode($parameter));
+        $this->config->setAppValue(self::appName, $application, $encrypted);
         return true;
     }
 
@@ -127,18 +135,17 @@ class StoreService
      * @return mixed
      * @throws \OCP\PreConditionNotMetException
      */
-    public function set($token, $value)
+    public function setBackground($value)
     {
-        $user = $this->UserSession->getUser();
-        $this->config->setUserValue($user->getUID(), 'sfbridge', $token, var_export($value, true));
+        $this->config->setAppValue(self::appName, 'backgroundJob', $value);
         return true;
     }
 
-    public function get($token)
+    public function getBackground()
     {
-        $user = $this->UserSession->getUser();
-        return $this->config->getUserValue($user->getUID(), 'sfbridge', $token, false);
+        return $this->config->getAppValue(self::appName, 'backgroundJob');
     }
+
     /**
      * backup; not used
      */

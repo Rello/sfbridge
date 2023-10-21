@@ -15,10 +15,10 @@ use OCA\SFbridge\Service\StoreService;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
 use OCP\IUserSession;
-use OCP\Settings\ISettings;
+use OCP\Settings\IDelegatedSettings;
 use OCP\IConfig;
 
-class Personal implements ISettings
+class Admin implements IDelegatedSettings
 {
     private $userId;
     /** @var IConfig */
@@ -46,6 +46,7 @@ class Personal implements ISettings
 
     /**
      * @return TemplateResponse returns the instance with all parameters set, ready to be rendered
+     * @throws \Exception
      * @since 9.1
      */
     public function getForm()
@@ -54,10 +55,9 @@ class Personal implements ISettings
         $salesforce = $this->StoreService->getSecureParameter('salesforce');
         $bank = $this->StoreService->getSecureParameter('bank');
 
-        $user = $this->userSession->getUser();
         $this->initialState->provideInitialState(
             'background',
-            $this->config->getUserValue($user->getUID(), 'sfbridge', 'background', false)
+            $this->StoreService->getBackground()
         );
 
         $parameters = [
@@ -74,17 +74,7 @@ class Personal implements ISettings
             'bank_excludes' => $bank['excludes']?? null,
             'bank_searchText' => $bank['searchText']?? null,
         ];
-        return new TemplateResponse('sfbridge', 'settings/personal', $parameters, '');
-    }
-
-    /**
-     * Print config section (ownCloud 10)
-     *
-     * @return TemplateResponse
-     */
-    public function getPanel()
-    {
-        return $this->getForm();
+        return new TemplateResponse('sfbridge', 'settings/admin', $parameters, '');
     }
 
     /**
@@ -96,14 +86,8 @@ class Personal implements ISettings
         return 'sfbridge';
     }
 
-    /**
-     * Get section ID (ownCloud 10)
-     *
-     * @return string
-     */
-    public function getSectionID()
-    {
-        return 'sfbridge';
+    public function getName(): ?string {
+        return null;
     }
 
     /**
@@ -117,5 +101,11 @@ class Personal implements ISettings
     public function getPriority()
     {
         return 10;
+    }
+
+    public function getAuthorizedAppConfig(): array {
+        return [
+            $this->appName => '/.*/',
+        ];
     }
 }

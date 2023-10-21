@@ -11,7 +11,10 @@
 
 namespace OCA\SFbridge\Service;
 
+use GuzzleHttp\Exception\GuzzleException;
 use OCA\SFbridge\Notification\NotificationManager;
+use OCA\SFbridge\Salesforce\Exception\SalesforceAuthenticationException;
+use OCA\SFbridge\Salesforce\Exception\SalesforceException;
 use Psr\Log\LoggerInterface;
 
 class CompareService
@@ -75,20 +78,23 @@ class CompareService
     /**
      * get paypal transactions and start the compare process
      *
-     * @param $update
-     * @param $from
-     * @param $to
+     * @param $transactions
+     * @param $delimiter
      * @param bool $isBackgroundJob
      * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceAuthenticationException
-     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
+     * @throws GuzzleException
+     * @throws SalesforceAuthenticationException
+     * @throws SalesforceException
      */
-    public function bank($transactions, $isBackgroundJob = false)
+    public function bank($content, $isBackgroundJob = false)
     {
         $this->update = true;
 
-        $transactionsLined = $this->harmonizeBankTransactions($transactions);
+        $transactions = str_getcsv($content, "\n");  // split rows
+        $delimiter = $this->detectDelimiter($transactions[0]); // first row
+        $transactions = array_slice($transactions, 1); // remove header
+
+        $transactionsLined = $this->harmonizeBankTransactions($transactions, $delimiter);
         $transactionsLined = $this->excludeBankTransactions($transactionsLined);
         $transactionsLined = $this->replaceBankTransactions($transactionsLined);
 
@@ -275,7 +281,7 @@ class CompareService
                 if ($campaign['totalSize'] !== 0) {
                     $transaction['campaignName'] = $campaign['records'][0]['Name'];
                     $transaction['campaignId'] = $campaign['records'][0]['Id'];
-               }
+                }
             }
         }
         return [
@@ -320,8 +326,8 @@ class CompareService
 
             $payerInfo = $transaction['payer_info'];
             $line['payerEmail'] = $payerInfo['email_address'] ?? null;
-            $line['payerGivenName'] = substr($payerInfo['payer_name']['given_name'],0,40) ?? null;
-            $line['payerSurName'] = substr($payerInfo['payer_name']['surname'],0,40) ?? null;
+            $line['payerGivenName'] = isset($payerInfo['payer_name']['given_name']) ? substr($payerInfo['payer_name']['given_name'], 0, 40) : null;
+            $line['payerSurName'] = isset($payerInfo['payer_name']['surname']) ?  substr($payerInfo['payer_name']['surname'],0,40) : null;
             $line['payerAlternateName'] = $payerInfo['payer_name']['alternate_full_name'] ?? null;
             $line['payerIBAN'] = null;
 
@@ -343,32 +349,45 @@ class CompareService
      * create one dimensional transaction records with just the required fields
      *
      * @param $transactions
+     * @param $delimiter
      * @return array
      */
-    private function harmonizeBankTransactions($transactions): array
+    private function harmonizeBankTransactions($transactions, $delimiter): array
     {
         $transactionsLined = array();
+        $this->logger->info('Using data record delimiter: ' . $delimiter);
         foreach ($transactions as $transaction) {
-            // de $row = str_getcsv($transaction, ';');
-            $row = str_getcsv($transaction, ',', '"');
+            $row = str_getcsv($transaction, $delimiter, '"');
 
             //$this->logger->info('Data set raw: ' . json_encode($row));
-            // de $date = explode('.', $row[0]);
-            $date = explode('/', $row[0]);
-            // de $date = $date[2].'-'.$date[1].'-'.$date[0];
-            $date = $date[2].'-'.$date[0].'-'.$date[1];
+            $dateDelimiter = $this->detectDelimiter($row[0]);
+            //$this->logger->info('Using date delimiter: ' . $dateDelimiter);
+            if ($dateDelimiter === '/') {
+                // US date format
+                //$this->logger->info('US date');
+                $date = explode($dateDelimiter, $row[0]);
+                $date = $date[2].'-'.$date[0].'-'.$date[1];
+            } elseif ($dateDelimiter === '.') {
+                // DE date format
+                $date = explode($dateDelimiter, $row[0]);
+                $date = $date[2].'-'.$date[1].'-'.$date[0];
+                //$this->logger->info('German date');
+            } else {
+                throwException();
+            }
 
+            $date = date("Y-m-d", strtotime($date));
             $nameArray = explode(' ', $row[3]);
 
-            if (strpos($row[4], 'Mandate:') !== false) {
+            if (str_contains($row[4], 'Mandate:')) {
                 $method = 'SEPA Lastschrift';
             } else {
                 $method = 'Banküberweisung';
             }
 
-            $line['transactionId'] = hash('md5', $row[0].$row[3].$row[4].$row[5].$row[7]);
+            $line['transactionId'] = hash('md5', $date.$row[3].$row[4].$row[5].$row[7]);
             $line['transactionType'] = null;
-            $line['transactionDate'] = date("Y-m-d", strtotime($date));
+            $line['transactionDate'] = $date;
             $line['transactionAmount'] = str_replace(',', '.', $row[7]);
             $line['transactionFee'] = null;
             $line['transactionNote'] = $row[4];
@@ -424,5 +443,20 @@ class CompareService
             }
         }
         return $transactions;
+    }
+
+    private function detectDelimiter($row): string
+    {
+        $delimiters = ["\t", ";", "|", ",", ".", "/"];
+        $data_2 = array();
+        $delimiter = $delimiters[0];
+        foreach ($delimiters as $d) {
+            $data_1 = str_getcsv($row, $d);
+            if (sizeof($data_1) > sizeof($data_2)) {
+                $delimiter = $d;
+                $data_2 = $data_1;
+            }
+        }
+        return $delimiter;
     }
 }

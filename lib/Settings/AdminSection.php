@@ -15,7 +15,7 @@ use OCP\IL10N;
 use OCP\IURLGenerator;
 use OCP\Settings\IIconSection;
 
-class PersonalSection implements IIconSection
+class AdminSection implements IIconSection
 {
     /** @var IURLGenerator */
     private $urlGenerator;

@@ -144,5 +144,5 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('saveSalesforce').addEventListener('click', OCA.SFbridge.Settings.setSalesforce);
     document.getElementById('saveBank').addEventListener('click', OCA.SFbridge.Settings.setBank);
     document.getElementById('sfBackground').addEventListener('click', OCA.SFbridge.Settings.background);
-    document.getElementById('sfBackground').checked = OCA.SFbridge.Settings.getInitialState('background') === 'true';
+    document.getElementById('sfBackground').checked = OCA.SFbridge.Settings.getInitialState('background') === '1';
 });
