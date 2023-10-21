@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1 - 2023-10-21
+### Fixed
+- handle empty token
+
 ## 0.2.0 - 2023-10-21
 ### Changed
 - settings are now admin settings

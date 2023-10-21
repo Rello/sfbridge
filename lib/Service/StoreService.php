@@ -108,6 +108,7 @@ class StoreService
     public function getSecureParameter($application)
     {
         $value = $this->config->getAppValue(self::appName, $application);
+        if (!$value) return false;
         return json_decode($this->crypto->decrypt($value), true);
     }
 
