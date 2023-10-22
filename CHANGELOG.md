@@ -4,6 +4,9 @@
 ### Changed
 - send notifications to users - when the app is enabled for a dedicated group
 
+### Fixed
+- hourly background check job
+
 ## 0.2.1 - 2023-10-21
 ### Fixed
 - handle empty token

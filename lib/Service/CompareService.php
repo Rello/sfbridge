@@ -141,9 +141,9 @@ class CompareService
         $transactionsNew = $validateOpportunities['transactions'];
 
         // create notifications when executed in background
-        if ($this->transactionsNewCount !== 0 && $isBackgroundJob) {
+        //if ($this->transactionsNewCount !== 0 && $isBackgroundJob) {
             $this->NotificationManager->triggerNotification(NotificationManager::NEW_TRANSACTION, 0, $this->transactionsNewCount, ['subject' => $this->transactionsNewCount], 'admin');
-        }
+        //}
         // when an update is performed, remove all existing notifications for everyone
         if ($this->update) {
             $this->NotificationManager->clearNotifications(NotificationManager::NEW_TRANSACTION, 0);

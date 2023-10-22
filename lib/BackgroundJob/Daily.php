@@ -16,26 +16,18 @@ use OCA\SFbridge\Service\CompareService;
 use OCA\SFbridge\Service\StoreService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\TimedJob;
-use OCP\IUserSession;
 use Psr\Log\LoggerInterface;
-use OCP\IUserManager;
 
 class Daily extends TimedJob
 {
     private $logger;
     private $CompareService;
     private $StoreService;
-    /** @var IUserSession */
-    private $UserSession;
-    /** @var IUserManager */
-    private $UserManager;
 
     public function __construct(ITimeFactory $time,
                                 LoggerInterface $logger,
                                 CompareService $CompareService,
-                                StoreService $StoreService,
-                                IUserSession $UserSession,
-                                IUserManager $UserManager
+                                StoreService $StoreService
     )
     {
         parent::__construct($time);
@@ -43,8 +35,6 @@ class Daily extends TimedJob
         $this->logger = $logger;
         $this->CompareService = $CompareService;
         $this->StoreService = $StoreService;
-        $this->UserSession = $UserSession;
-        $this->UserManager = $UserManager;
     }
 
     /**
@@ -53,8 +43,6 @@ class Daily extends TimedJob
     public function run($arguments)
     {
         try {
-            $user = $this->UserManager->get('admin');
-            $this->UserSession->setUser($user);
             $scheduled = $this->StoreService->getBackground();
             if ($scheduled) {
                 $from = date('Y-m-d\T00:00', strtotime("-3 days"));
@@ -65,5 +53,4 @@ class Daily extends TimedJob
             // no action
         }
     }
-
 }
