@@ -39,7 +39,7 @@ class Application extends App implements IBootstrap
 
     protected function registerNotifications(): void
     {
-        $notificationManager = \OC::$server->getNotificationManager();
+        $notificationManager = \OC::$server->get(\OCP\Notification\IManager::class);
         $notificationManager->registerNotifierService(Notifier::class);
     }
 }

@@ -48,9 +48,7 @@ class Notifier implements INotifier
 
     /**
      * Identifier of the notifier, only use [a-z0-9_]
-     *
      * @return string
-     * @since 17.0.0
      */
     public function getID(): string
     {
@@ -58,10 +56,8 @@ class Notifier implements INotifier
     }
 
     /**
-     * Human readable name describing the notifier
-     *
+     * Human-readable name describing the notifier
      * @return string
-     * @since 17.0.0
      */
     public function getName(): string
     {
@@ -72,9 +68,6 @@ class Notifier implements INotifier
      * @param INotification $notification
      * @param string $languageCode The code of the language that should be used to prepare the notification
      * @return INotification
-     * @throws InvalidArgumentException When the notification was not prepared by a notifier
-     * @throws AlreadyProcessedException When the notification is not needed anymore and should be deleted
-     * @since 9.0.0
      */
     public function prepare(INotification $notification, string $languageCode): INotification
     {
@@ -89,32 +82,33 @@ class Notifier implements INotifier
 
         switch ($notification->getObjectType()) {
             case NotificationManager::NEW_TRANSACTION:
-                $parsedSubject = $l->t("{subject} new transactions available in Paypal");
+                $parsedSubject = $l->t('{subject} new transactions available in Paypal');
                 break;
             default: // legacy due to switch to subject field filled with an id for notification removal
                 $parsedSubject = '';
         }
 
-        $link = $this->urlGenerator->linkToRouteAbsolute('sfbridge.page.index') . '#/r/' . $notification->getObjectId();
-
         $parameters = $notification->getSubjectParameters();
-        $notification->setRichSubject(
-            $parsedSubject,
-            [
-                'subject' => [
-                    'type' => 'highlight',
-                    'id' => $notification->getObjectId(),
-                    'name' => $parameters['subject'],
-                ],
+        $notification->setRichSubject($parsedSubject, [
+            'subject' => [
+                'type' => 'highlight',
+                'id' => $notification->getObjectId(),
+                'name' => (string) $parameters['subject'],
             ]
-        );
+        ]);
+
         $notification->setIcon($this->urlGenerator->getAbsoluteURL($this->urlGenerator->imagePath('sfbridge', 'app-dark.svg')));
+        $notification->setLink($this->urlGenerator->linkToRouteAbsolute('sfbridge.page.index'));
         $this->setParsedSubjectFromRichSubject($notification);
         return $notification;
     }
 
     // This is a little helper function which automatically sets the simple parsed subject
     // based on the rich subject you set.
+    /**
+     * @param INotification $notification
+     * @return void
+     */
     protected function setParsedSubjectFromRichSubject(INotification $notification)
     {
         $placeholders = $replacements = [];
@@ -126,7 +120,6 @@ class Notifier implements INotifier
                 $replacements[] = $parameter['name'];
             }
         }
-
         $notification->setParsedSubject(str_replace($placeholders, $replacements, $notification->getRichSubject()));
     }
 

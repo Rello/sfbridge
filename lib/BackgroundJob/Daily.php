@@ -11,6 +11,7 @@
 
 namespace OCA\SFbridge\BackgroundJob;
 
+use GuzzleHttp\Exception\GuzzleException;
 use OCA\SFbridge\Service\CompareService;
 use OCA\SFbridge\Service\StoreService;
 use OCP\AppFramework\Utility\ITimeFactory;
@@ -46,6 +47,9 @@ class Daily extends TimedJob
         $this->UserManager = $UserManager;
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function run($arguments)
     {
         try {
@@ -55,7 +59,7 @@ class Daily extends TimedJob
             if ($scheduled) {
                 $from = date('Y-m-d\T00:00', strtotime("-3 days"));
                 $to = date('Y-m-d\T00:00', strtotime("+1 day"));
-                $this->CompareService->compare(false, $from, $to, true);
+                $this->CompareService->paypal(false, $from, $to, true);
             }
         } catch (\Exception $e) {
             // no action

@@ -118,7 +118,7 @@ class CompareService
     {
         $this->transactionsCount = count($transactionsLined);
 
-        // get existing Saleforce payment IDs
+        // get existing Salesforce payment IDs
         $transactionIds = array_column($transactionsLined, 'transactionId');
         $existingPayments = $this->SalesforceService->paymentsByReference($transactionIds);
 
@@ -135,13 +135,18 @@ class CompareService
         $getCampaigns = $this->getCampaigns($transactionsNew);
         $transactionsNew = $getCampaigns['transactions'];
 
-        // compare for existing opportunitiy
+        // compare for existing opportunity
         // create opportunity
         $validateOpportunities = $this->validateOpportunities($transactionsNew);
         $transactionsNew = $validateOpportunities['transactions'];
 
+        // create notifications when executed in background
         if ($this->transactionsNewCount !== 0 && $isBackgroundJob) {
             $this->NotificationManager->triggerNotification(NotificationManager::NEW_TRANSACTION, 0, $this->transactionsNewCount, ['subject' => $this->transactionsNewCount], 'admin');
+        }
+        // when an update is performed, remove all existing notifications for everyone
+        if ($this->update) {
+            $this->NotificationManager->clearNotifications(NotificationManager::NEW_TRANSACTION, 0);
         }
 
         return [
@@ -459,4 +464,5 @@ class CompareService
         }
         return $delimiter;
     }
+
 }

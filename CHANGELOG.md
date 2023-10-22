@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0 - 2023-10-22
+### Changed
+- send notifications to users - when the app is enabled for a dedicated group
+
 ## 0.2.1 - 2023-10-21
 ### Fixed
 - handle empty token
