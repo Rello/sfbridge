@@ -3,6 +3,7 @@
 ## 0.3.1 - 2023-11-03
 ### Changed
 - include amount in notification
+- copyright
 
 ## 0.3.0 - 2023-10-22
 ### Changed

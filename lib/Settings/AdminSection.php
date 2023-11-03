@@ -6,7 +6,7 @@
  * later. See the LICENSE.md file.
  *
  * @author Marcel Scherello <sfbridge@scherello.de>
- * @copyright 2021 Marcel Scherello
+ * @copyright 2021-2023 Marcel Scherello
  */
 
 namespace OCA\SFbridge\Settings;
