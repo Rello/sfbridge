@@ -82,7 +82,7 @@ class Notifier implements INotifier
 
         switch ($notification->getObjectType()) {
             case NotificationManager::NEW_TRANSACTION:
-                $parsedSubject = $l->t('{subject} new transactions available in Paypal');
+                $parsedSubject = $l->t('{subject} new transactions of {amount}€ available in Paypal');
                 break;
             default: // legacy due to switch to subject field filled with an id for notification removal
                 $parsedSubject = '';
@@ -94,6 +94,11 @@ class Notifier implements INotifier
                 'type' => 'highlight',
                 'id' => $notification->getObjectId(),
                 'name' => (string) $parameters['subject'],
+            ],
+            'amount' => [
+                'type' => 'highlight',
+                'id' => $notification->getObjectId(),
+                'name' => (string) $parameters['amount'],
             ]
         ]);
 

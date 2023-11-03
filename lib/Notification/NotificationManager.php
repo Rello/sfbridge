@@ -27,10 +27,10 @@ class NotificationManager
     private $groupManager;
 
     public function __construct(
-        LoggerInterface $logger,
+        LoggerInterface      $logger,
         INotificationManager $notificationManager,
-        IAppManager $appManager,
-        IGroupManager $groupManager
+        IAppManager          $appManager,
+        IGroupManager        $groupManager
     )
     {
         $this->logger = $logger;
@@ -48,27 +48,29 @@ class NotificationManager
      */
     public function triggerNotification($object_type, $object_id, $subject, $subject_parameter, $user_id)
     {
-        $this->clearNotifications($object_type, $object_id);
-
+        //$this->clearNotifications($object_type, $object_id);
         $users = $this->getUsersToNotify();
         if (!$users) return;
 
-            $notification = $this->notificationManager->createNotification();
-            $notification->setApp('sfbridge')
-                ->setDateTime(new \DateTime())
-                ->setObject($object_type, $object_id)
-                ->setSubject($subject, $subject_parameter);
+        $notification = $this->notificationManager->createNotification();
+        $notification->setApp('sfbridge')
+            ->setObject($object_type, $object_id)
+            ->setSubject($subject, $subject_parameter);
 
+        if ($this->notificationManager->getCount($notification) === 0) {
             foreach ($users as $uid) {
                 $notification->setUser($uid);
+                $notification->setDateTime(new \DateTime());
                 $this->notificationManager->notify($notification);
             }
+        }
     }
 
     /**
      * Remove notifications
      */
-    public function clearNotifications($object_type, $object_id) {
+    public function clearNotifications($object_type, $object_id)
+    {
         $notification = $this->notificationManager->createNotification();
         try {
             $notification->setApp('sfbridge')
@@ -96,6 +98,6 @@ class NotificationManager
             }
         }
         $allMembers = array_unique($allMembers);
- 		return $allMembers;
- 	}
+        return $allMembers;
+    }
 }

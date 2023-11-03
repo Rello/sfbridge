@@ -27,17 +27,18 @@ class CompareService
     private $update = false;
     private $transactionsCount = 0;
     private $transactionsNewCount = 0;
+    private $transactionsTotalAmount = 0;
     private $contactsNewCount = 0;
     private $opportunitiesNewCount = 0;
     private $opportunitiesUpdateCount = 0;
     private $campaignCount = 0;
 
     public function __construct(
-        LoggerInterface $logger,
-        PaypalService $PaypalService,
+        LoggerInterface     $logger,
+        PaypalService       $PaypalService,
         NotificationManager $NotificationManager,
-        SalesforceService $SalesforceService,
-        StoreService $StoreService
+        SalesforceService   $SalesforceService,
+        StoreService        $StoreService
     )
     {
         $this->logger = $logger;
@@ -141,9 +142,9 @@ class CompareService
         $transactionsNew = $validateOpportunities['transactions'];
 
         // create notifications when executed in background
-        //if ($this->transactionsNewCount !== 0 && $isBackgroundJob) {
-            $this->NotificationManager->triggerNotification(NotificationManager::NEW_TRANSACTION, 0, $this->transactionsNewCount, ['subject' => $this->transactionsNewCount], 'admin');
-        //}
+        if ($this->transactionsNewCount !== 0 && $isBackgroundJob) {
+            $this->NotificationManager->triggerNotification(NotificationManager::NEW_TRANSACTION, 0, $this->transactionsNewCount, ['subject' => $this->transactionsNewCount, 'amount' => $this->transactionsTotalAmount], 'admin');
+        }
         // when an update is performed, remove all existing notifications for everyone
         if ($this->update) {
             $this->NotificationManager->clearNotifications(NotificationManager::NEW_TRANSACTION, 0);
@@ -185,14 +186,14 @@ class CompareService
 
             if ($opportunityPledgeId) {
                 // Opportunity is a recurring pledge. Update Status "Closed Won"
-                $this->logger->info('Pledge to be updated: '. $opportunityPledgeId['Name'].$opportunityPledgeId['Id']);
+                $this->logger->info('Pledge to be updated: ' . $opportunityPledgeId['Name'] . $opportunityPledgeId['Id']);
                 $this->opportunitiesUpdateCount++;
                 array_push($opportunitiesUpdate, $opportunityPledgeId['Name']);
                 if ($this->update) {
                     $this->SalesforceService->opportunityPledgeUpdate($opportunityPledgeId['Id'], $transaction['transactionDate']);
                     $paymentId = $this->SalesforceService->paymentByOpportunityId($opportunityPledgeId['Id']);
                     $this->SalesforceService->paymentUpdateReference($paymentId, $transaction['transactionId'], $transaction['paymentMethod']);
-                    $this->SalesforceService->allocationCreate($opportunityPledgeId['Id'],$transaction['transactionFee']);
+                    $this->SalesforceService->allocationCreate($opportunityPledgeId['Id'], $transaction['transactionFee']);
                 }
             } else {
                 // create new Opp
@@ -239,14 +240,14 @@ class CompareService
                 $contact = $this->SalesforceService->contactSearch('Email', $transaction['payerEmail']);
             } else {
                 $contact = $this->SalesforceService->contactSearch('Name', $transaction['payerAlternateName']);
-                $this->logger->info('Search by AlternateName: '.$transaction['payerAlternateName']);
-                $this->logger->info('Number of matches: '.$contact['totalSize']);
+                $this->logger->info('Search by AlternateName: ' . $transaction['payerAlternateName']);
+                $this->logger->info('Number of matches: ' . $contact['totalSize']);
             }
             //$contact['totalSize'] = 0;
             if ($contact['totalSize'] === 0) {
                 $this->contactsNewCount++;
                 if ($this->update) {
-                    $this->logger->info('New Contact to be created: '.$transaction['payerGivenName'] . '-' . $transaction['payerSurName'] . '-' . $transaction['payerAlternateName']);
+                    $this->logger->info('New Contact to be created: ' . $transaction['payerGivenName'] . '-' . $transaction['payerSurName'] . '-' . $transaction['payerAlternateName']);
                     $newContact = $this->SalesforceService->contactCreate($transaction['payerGivenName'], $transaction['payerSurName'], $transaction['payerAlternateName'], $transaction['payerEmail']);
                     $transaction['contactId'] = $newContact['contactId'];
                     $transaction['accountId'] = $newContact['accountId'];
@@ -306,6 +307,8 @@ class CompareService
         foreach ($transactions as $key => &$transaction) {
             if (in_array($transaction['transactionId'], $payments)) {
                 unset($transactions[$key]);
+            } else {
+                $this->transactionsTotalAmount += $transaction['transactionAmount'];
             }
         }
         return $transactions;
@@ -332,7 +335,7 @@ class CompareService
             $payerInfo = $transaction['payer_info'];
             $line['payerEmail'] = $payerInfo['email_address'] ?? null;
             $line['payerGivenName'] = isset($payerInfo['payer_name']['given_name']) ? substr($payerInfo['payer_name']['given_name'], 0, 40) : null;
-            $line['payerSurName'] = isset($payerInfo['payer_name']['surname']) ?  substr($payerInfo['payer_name']['surname'],0,40) : null;
+            $line['payerSurName'] = isset($payerInfo['payer_name']['surname']) ? substr($payerInfo['payer_name']['surname'], 0, 40) : null;
             $line['payerAlternateName'] = $payerInfo['payer_name']['alternate_full_name'] ?? null;
             $line['payerIBAN'] = null;
 
@@ -371,11 +374,11 @@ class CompareService
                 // US date format
                 //$this->logger->info('US date');
                 $date = explode($dateDelimiter, $row[0]);
-                $date = $date[2].'-'.$date[0].'-'.$date[1];
+                $date = $date[2] . '-' . $date[0] . '-' . $date[1];
             } elseif ($dateDelimiter === '.') {
                 // DE date format
                 $date = explode($dateDelimiter, $row[0]);
-                $date = $date[2].'-'.$date[1].'-'.$date[0];
+                $date = $date[2] . '-' . $date[1] . '-' . $date[0];
                 //$this->logger->info('German date');
             } else {
                 throwException();
@@ -390,7 +393,7 @@ class CompareService
                 $method = 'Banküberweisung';
             }
 
-            $line['transactionId'] = hash('md5', $date.$row[3].$row[4].$row[5].$row[7]);
+            $line['transactionId'] = hash('md5', $date . $row[3] . $row[4] . $row[5] . $row[7]);
             $line['transactionType'] = null;
             $line['transactionDate'] = $date;
             $line['transactionAmount'] = str_replace(',', '.', $row[7]);
@@ -398,8 +401,8 @@ class CompareService
             $line['transactionNote'] = $row[4];
 
             $line['payerEmail'] = null;
-            $line['payerSurName'] = (int)$line['transactionAmount'] > 0 ? substr(array_pop($nameArray),0,40) : null;
-            $line['payerGivenName'] = (int)$line['transactionAmount'] > 0 ? substr(implode(' ', $nameArray),0,40) : null;
+            $line['payerSurName'] = (int)$line['transactionAmount'] > 0 ? substr(array_pop($nameArray), 0, 40) : null;
+            $line['payerGivenName'] = (int)$line['transactionAmount'] > 0 ? substr(implode(' ', $nameArray), 0, 40) : null;
             $line['payerAlternateName'] = $row[3];
             $line['payerIBAN'] = $row[5];
 
