@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0 - 2024-03-14
+### Changed
+- admin setting for excluded paypal transaction types
+
 ## 0.3.1 - 2023-11-03
 ### Changed
 - include amount in notification

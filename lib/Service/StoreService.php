@@ -146,30 +146,4 @@ class StoreService
     {
         return $this->config->getAppValue(self::appName, 'backgroundJob');
     }
-
-    /**
-     * backup; not used
-     */
-    private function getSecureSalesforce()
-    {
-        $user = $this->UserSession->getUser();
-        $auth = $this->credentialsManager->retrieve($user->getUID(), self::appName . '.' . 'salesforce');
-        return $auth;
-    }
-
-    /**
-     * backup; not used
-     */
-    private function setSecureSalesforce($client_id, $client_secret, $instanceUrl)
-    {
-        $user = $this->UserSession->getUser();
-        $this->credentialsManager->store($user->getUID(), self::appName . '.' . 'salesforce', [
-            'grant_type' => 'password',
-            'client_id' => $client_id,
-            'client_secret' => $client_secret,
-            'username' => $instanceUrl,
-            'password' => $instanceUrl,
-        ]);
-        return true;
-    }
 }

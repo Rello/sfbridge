@@ -64,6 +64,7 @@ class Admin implements IDelegatedSettings
             'paypal_client_id' => $paypal['client_id']?? null,
             'paypal_client_secret' => $paypal['client_secret']?? null,
             'paypal_instanceUrl' => $paypal['instanceUrl']?? null,
+            'paypal_excludeTypes' => $paypal['excludeTypes']?? null,
 
             'salesforce_client_id' => $salesforce['client_id']?? null,
             'salesforce_client_secret' => $salesforce['client_secret']?? null,

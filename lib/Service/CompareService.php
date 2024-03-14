@@ -72,6 +72,7 @@ class CompareService
         // get paypal transactions
         $transactions = $this->PaypalService->transactions($start, $end, null);
         $transactionsLined = $this->harmonizePaypalTransactions($transactions);
+        $transactionsLined = $this->excludePaypalTransactions($transactionsLined);
 
         return $this->processTransactions($transactions, $transactionsLined, $isBackgroundJob);
     }
@@ -143,7 +144,7 @@ class CompareService
 
         // create notifications when executed in background
         if ($this->transactionsNewCount !== 0 && $isBackgroundJob) {
-            $this->NotificationManager->triggerNotification(NotificationManager::NEW_TRANSACTION, 0, $this->transactionsNewCount, ['subject' => $this->transactionsNewCount, 'amount' => $this->transactionsTotalAmount], 'admin');
+            $this->NotificationManager->triggerNotification(NotificationManager::NEW_TRANSACTION, 0, $this->transactionsNewCount, ['subject' => $this->transactionsNewCount, 'amount' => $this->transactionsTotalAmount]);
         }
         // when an update is performed, remove all existing notifications for everyone
         if ($this->update) {
@@ -153,10 +154,10 @@ class CompareService
         return [
             'counts' => [
                 'Transactions in timeframe' => $this->transactionsCount,
-                '-> new transactions' => $this->transactionsNewCount,
-                '-> new contacts' => $this->contactsNewCount,
-                '-> new opportunities' => $this->opportunitiesNewCount,
-                '-> updated pledges/opportunities' => $this->opportunitiesUpdateCount,
+                '- new transactions' => $this->transactionsNewCount,
+                '- new contacts' => $this->contactsNewCount,
+                '- new opportunities' => $this->opportunitiesNewCount,
+                '- updated pledges or opportunities' => $this->opportunitiesUpdateCount,
             ],
             'all transactions' => $transactions,
             'new transactions' => $transactionsNew,
@@ -346,9 +347,7 @@ class CompareService
             $line['itemCode'] = $itemInfo['item_code'] ?? null;
             $line['paymentMethod'] = 'Paypal';
 
-            if ($line['transactionType'] !== 'T1105' && $line['transactionType'] !== 'T0400') {
-                $transactionsLined[] = $line;
-            }
+            $transactionsLined[] = $line;
         }
         return $transactionsLined;
     }
@@ -419,6 +418,7 @@ class CompareService
      *
      * @param $transactions
      * @return array
+     * @throws \Exception
      */
     private function excludeBankTransactions($transactions): array
     {
@@ -438,6 +438,7 @@ class CompareService
      *
      * @param $transactions
      * @return array
+     * @throws \Exception
      */
     private function replaceBankTransactions($transactions): array
     {
@@ -448,6 +449,26 @@ class CompareService
         foreach ($transactions as &$transaction) {
             if ($transaction['transactionNote'] === $searchText) {
                 $transaction['payerAlternateName'] = $replaceName;
+            }
+        }
+        return $transactions;
+    }
+
+    /**
+     * exclude transactions which contain excluded transaction types
+     *
+     * @param $transactions
+     * @return array
+     * @throws \Exception
+     */
+    private function excludePaypalTransactions($transactions): array
+    {
+        $bank = $this->StoreService->getSecureParameter('paypal');
+        $excludes = explode(',', $bank['excludeTypes']);
+
+        foreach ($transactions as $key => &$transaction) {
+            if (in_array($transaction['transactionType'], $excludes)) {
+                unset($transactions[$key]);
             }
         }
         return $transactions;

@@ -11,6 +11,7 @@
 
 namespace OCA\SFbridge\Controller;
 
+use GuzzleHttp\Exception\GuzzleException;
 use OCA\SFbridge\Service\CompareService;
 use OCA\SFbridge\Salesforce\Exception\SalesforceException;
 use OCP\AppFramework\ApiController;
@@ -54,6 +55,7 @@ class ApiDataController extends ApiController
      * @NoAdminRequired
      * @return DataResponse
      * @throws \Exception
+     * @throws GuzzleException
      */
     public function addData()
     {

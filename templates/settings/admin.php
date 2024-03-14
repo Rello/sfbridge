@@ -46,6 +46,20 @@ Util::addScript('sfbridge', 'userGuidance');
                        style="width: 300px;"/>
             </div>
         </div>
+        <div style="display: table-row;">
+            <div style="display: table-cell; width: 200px;">
+                <label for="paypal_excludeTypes"><?php p($l->t('Excluded Transaction Types')); ?></label>
+            </div>
+            <div style="display: table-cell;">
+                <input type="text" id="paypal_excludeTypes" value="<?php p($_['paypal_excludeTypes']); ?>"
+                       style="width: 300px;"/>
+                <br>
+                <em><?php p($l->t('Separate with ","')); ?> </em>
+                    <br>
+                <em>https://developer.paypal.com/docs/reports/reference/tcodes/
+                </em>
+            </div>
+        </div>
     </div>
     <button id="savePaypal" type="button" class="primary">
         <?php p($l->t('Save')); ?>

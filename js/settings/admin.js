@@ -13,15 +13,15 @@ if (!OCA.SFbridge) {
     /**
      * @namespace
      */
-    OCA.SFbridge = {
-    };
+    OCA.SFbridge = {};
 }
 
 OCA.SFbridge.Settings = {
     setPaypal: function () {
         let params = 'client_id=' + document.getElementById('paypal_client_id').value
             + '&client_secret=' + document.getElementById('paypal_client_secret').value
-            + '&instanceUrl=' + document.getElementById('paypal_instanceUrl').value;
+            + '&instanceUrl=' + document.getElementById('paypal_instanceUrl').value
+            + '&excludeTypes=' + document.getElementById('paypal_excludeTypes').value;
 
         let xhr = new XMLHttpRequest();
         xhr.open('POST', OC.generateUrl('apps/sfbridge/settings/paypal', true));
@@ -85,7 +85,8 @@ OCA.SFbridge.Settings = {
     setBank: function () {
         let params = 'excludes=' + document.getElementById('sfBankExcludes').value
             + '&searchText=' + document.getElementById('sfBankTexts').value
-            + '&replaceName=' + document.getElementById('sfBankName').value;;
+            + '&replaceName=' + document.getElementById('sfBankName').value;
+        ;
 
         let xhr = new XMLHttpRequest();
         xhr.open('POST', OC.generateUrl('apps/sfbridge/settings/bank', true));

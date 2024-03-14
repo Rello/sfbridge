@@ -53,14 +53,16 @@ class SettingsController extends Controller
      * @param $client_id
      * @param $client_secret
      * @param $instanceUrl
+     * @param $excludeTypes
      * @return DataResponse
      */
-    public function setParameterPaypal($client_id, $client_secret, $instanceUrl)
+    public function setParameterPaypal($client_id, $client_secret, $instanceUrl, $excludeTypes)
     {
         $parameter = [
             'client_id' => $client_id,
             'client_secret' => $client_secret,
             'instanceUrl' => $instanceUrl,
+            'excludeTypes' => $excludeTypes,
         ];
         return new DataResponse($this->StoreService->setSecureParameter('paypal', $parameter));
     }
