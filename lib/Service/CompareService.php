@@ -15,6 +15,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use OCA\SFbridge\Notification\NotificationManager;
 use OCA\SFbridge\Salesforce\Exception\SalesforceAuthenticationException;
 use OCA\SFbridge\Salesforce\Exception\SalesforceException;
+use OCP\Security\RateLimiting\IRateLimitExceededException;
 use Psr\Log\LoggerInterface;
 
 class CompareService
@@ -24,6 +25,7 @@ class CompareService
     private $SalesforceService;
     private $StoreService;
     private $NotificationManager;
+	private $TalkService;
     private $update = false;
     private $transactionsCount = 0;
     private $transactionsNewCount = 0;
@@ -38,7 +40,8 @@ class CompareService
         PaypalService       $PaypalService,
         NotificationManager $NotificationManager,
         SalesforceService   $SalesforceService,
-        StoreService        $StoreService
+        StoreService        $StoreService,
+		TalkService 		$TalkService
     )
     {
         $this->logger = $logger;
@@ -46,22 +49,26 @@ class CompareService
         $this->NotificationManager = $NotificationManager;
         $this->SalesforceService = $SalesforceService;
         $this->StoreService = $StoreService;
+		$this->TalkService = $TalkService;
     }
 
-    /**
-     * get paypal transactions and start the compare process
-     *
-     * @param $update
-     * @param $from
-     * @param $to
-     * @param bool $isBackgroundJob
-     * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceAuthenticationException
-     * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
-     */
-    public function paypal($update, $from, $to, $isBackgroundJob = false): array
-    {
+	/**
+	 * get paypal transactions and start the compare process
+	 *
+	 * @param $update
+	 * @param $from
+	 * @param $to
+	 * @param bool $isBackgroundJob
+	 * @return array|false
+	 * @throws \GuzzleHttp\Exception\GuzzleException
+	 * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceAuthenticationException
+	 * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
+	 * @throws IRateLimitExceededException
+	 */
+    public function paypal($update, $from, $to, $isBackgroundJob = false) {
+		if (!$this->TalkService->isConfigures()) {
+			return false;
+		}
         $start = $from . ':00-0000';
         $end = $to . ':00-0000';
 
@@ -74,7 +81,10 @@ class CompareService
         $transactionsLined = $this->harmonizePaypalTransactions($transactions);
         $transactionsLined = $this->excludePaypalTransactions($transactionsLined);
 
-        return $this->processTransactions($transactions, $transactionsLined, $isBackgroundJob);
+		$processed = $this->processTransactions($transactions, $transactionsLined, $isBackgroundJob);
+		$this->TalkService->postMessage($processed);
+
+		return $processed;
     }
 
     /**

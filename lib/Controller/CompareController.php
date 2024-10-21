@@ -50,7 +50,12 @@ class CompareController extends Controller
     {
         try {
             $return = $this->CompareService->paypal($update, $from, $to);
-            $status = Http::STATUS_OK;
+			if ($return) {
+				$status = Http::STATUS_OK;
+			} else {
+				$status = Http::STATUS_INTERNAL_SERVER_ERROR;
+				$return = 'Please configure the Talk Settings';
+			}
         }
         catch (SalesforceException $e) {
             $return = "exception: " . json_encode($e->getErrors());

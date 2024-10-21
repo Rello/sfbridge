@@ -54,10 +54,12 @@ class Admin implements IDelegatedSettings
         $paypal = $this->StoreService->getSecureParameter('paypal');
         $salesforce = $this->StoreService->getSecureParameter('salesforce');
         $bank = $this->StoreService->getSecureParameter('bank');
+		$talkRoom = $this->StoreService->getParameter('talkRoom');
+		$talkUser = $this->StoreService->getParameter('talkUser');
 
         $this->initialState->provideInitialState(
             'background',
-            $this->StoreService->getBackground()
+            $this->StoreService->getParameter('backgroundJob')
         );
 
         $parameters = [
@@ -74,6 +76,9 @@ class Admin implements IDelegatedSettings
             'bank_replaceName' => $bank['replaceName']?? null,
             'bank_excludes' => $bank['excludes']?? null,
             'bank_searchText' => $bank['searchText']?? null,
+
+			'talkRoom' => $talkRoom?? null,
+			'talkUser' => $talkUser?? null,
         ];
         return new TemplateResponse('sfbridge', 'settings/admin', $parameters, '');
     }

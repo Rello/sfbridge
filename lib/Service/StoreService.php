@@ -136,14 +136,14 @@ class StoreService
      * @return mixed
      * @throws \OCP\PreConditionNotMetException
      */
-    public function setBackground($value)
+    public function setParameter($key, $value)
     {
-        $this->config->setAppValue(self::appName, 'backgroundJob', $value);
+        $this->config->setAppValue(self::appName, $key, $value);
         return true;
     }
 
-    public function getBackground()
+    public function getParameter($key)
     {
-        return $this->config->getAppValue(self::appName, 'backgroundJob');
+        return $this->config->getAppValue(self::appName, $key);
     }
 }

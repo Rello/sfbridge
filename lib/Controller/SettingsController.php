@@ -43,7 +43,7 @@ class SettingsController extends Controller
      */
     public function background($background = false)
     {
-        return new DataResponse($this->StoreService->setBackground($background));
+        return new DataResponse($this->StoreService->setParameter('backgroundJob', $background));
     }
 
     /**
@@ -107,5 +107,21 @@ class SettingsController extends Controller
         ];
         return new DataResponse($this->StoreService->setSecureParameter('bank', $parameter));
     }
+
+	/**
+	 * set Bank parameters
+	 *
+	 * @NoAdminRequired
+	 * @param $talkRoom
+	 * @param $talkUser
+	 * @return DataResponse
+	 */
+	public function setParameterTalk($talkRoom, $talkUser)
+	{
+		$this->StoreService->setParameter('talkRoom', $talkRoom);
+		$this->StoreService->setParameter('talkUser', $talkUser);
+
+		return new DataResponse(true);
+	}
 
 }

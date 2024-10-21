@@ -44,9 +44,8 @@ class NotificationManager
      * @param int $object_id
      * @param $subject
      * @param array $subject_parameter
-     * @param $user_id
      */
-    public function triggerNotification($object_type, $object_id, $subject, $subject_parameter, $user_id)
+    public function triggerNotification($object_type, $object_id, $subject, $subject_parameter)
     {
         //$this->clearNotifications($object_type, $object_id);
         $users = $this->getUsersToNotify();

@@ -36,6 +36,7 @@ return [
         ['name' => 'settings#setParameterPaypal', 'url' => '/settings/paypal', 'verb' => 'POST'],
         ['name' => 'settings#setParameterSalesforce', 'url' => '/settings/salesforce', 'verb' => 'POST'],
         ['name' => 'settings#setParameterBank', 'url' => '/settings/bank', 'verb' => 'POST'],
+		['name' => 'settings#setParameterTalk', 'url' => '/settings/talk', 'verb' => 'POST'],
 
         // API
         // V1

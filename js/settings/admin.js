@@ -106,6 +106,28 @@ OCA.SFbridge.Settings = {
         xhr.send(params);
     },
 
+    setTalk: function () {
+        let params = 'talkRoom=' + document.getElementById('talkRoom').value
+            + '&talkUser=' + document.getElementById('talkUser').value;
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', OC.generateUrl('apps/sfbridge/settings/talk', true));
+        xhr.setRequestHeader('requesttoken', OC.requestToken);
+        xhr.setRequestHeader('OCS-APIREQUEST', 'true');
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=UTF-8');
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    OCA.SFbridge.Notification.notification('success', t('sfbridge', 'Saved'));
+                } else {
+                    OCA.SFbridge.Notification.notification('error', t('sfbridge', 'Error'));
+                }
+            }
+        };
+        xhr.send(params);
+    },
+
     background: function () {
         let background = document.getElementById('sfBackground').checked;
 
@@ -144,6 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('savePaypal').addEventListener('click', OCA.SFbridge.Settings.setPaypal);
     document.getElementById('saveSalesforce').addEventListener('click', OCA.SFbridge.Settings.setSalesforce);
     document.getElementById('saveBank').addEventListener('click', OCA.SFbridge.Settings.setBank);
+    document.getElementById('saveTalk').addEventListener('click', OCA.SFbridge.Settings.setTalk);
     document.getElementById('sfBackground').addEventListener('click', OCA.SFbridge.Settings.background);
     document.getElementById('sfBackground').checked = OCA.SFbridge.Settings.getInitialState('background') === '1';
 });

@@ -43,7 +43,7 @@ class Daily extends TimedJob
     public function run($arguments)
     {
         try {
-            $scheduled = $this->StoreService->getBackground();
+            $scheduled = $this->StoreService->getParameter('backgroundJob');
             if ($scheduled) {
                 $from = date('Y-m-d\T00:00', strtotime("-3 days"));
                 $to = date('Y-m-d\T00:00', strtotime("+1 day"));
