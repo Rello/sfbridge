@@ -2,11 +2,8 @@
 /**
  * Salesforce Bridge
  *
- * This file is licensed under the Affero General Public License version 3 or
- * later. See the LICENSE.md file.
- *
- * @author Marcel Scherello <sfbridge@scherello.de>
- * @copyright 2021-2023 Marcel Scherello
+ * SPDX-FileCopyrightText: 2024 Marcel Scherello
+ * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
 namespace OCA\SFbridge\Service;
