@@ -5,7 +5,6 @@ SPDX-PackageName = "sfbridge"
 SPDX-PackageSupplier = "Marcel Scherello <sfbridge@scherello.de>"
 SPDX-PackageDownloadLocation = "https://github.com/rello/sfbridge"
 
-
 [[annotations]]
 path = "l10n/**"
 precedence = "aggregate"

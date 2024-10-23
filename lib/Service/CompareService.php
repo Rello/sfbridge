@@ -61,8 +61,9 @@ class CompareService
 	 * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceAuthenticationException
 	 * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
 	 * @throws IRateLimitExceededException
+	 * @throws \Exception
 	 */
-    public function paypal($update, $from, $to, $isBackgroundJob = false) {
+    public function paypal($update, $from, $to, bool $isBackgroundJob = false): false|array {
 		if (!$this->TalkService->isConfigures()) {
 			return false;
 		}
@@ -95,7 +96,7 @@ class CompareService
      * @throws SalesforceAuthenticationException
      * @throws SalesforceException
      */
-    public function bank($content, $isBackgroundJob = false)
+    public function bank($content, bool $isBackgroundJob = false)
     {
         $this->update = true;
 
@@ -123,7 +124,7 @@ class CompareService
      * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceAuthenticationException
      * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
      */
-    public function processTransactions($transactions, $transactionsLined, $isBackgroundJob = false): array
+    public function processTransactions($transactions, $transactionsLined, bool $isBackgroundJob = false): array
     {
         $this->transactionsCount = count($transactionsLined);
 
@@ -206,8 +207,12 @@ class CompareService
             } else {
                 // create new Opp
                 $this->opportunitiesNewCount++;
-                array_push($opportunitiesNew, $transaction['payerAlternateName'] . ' ' . $transaction['transactionAmount'] . ' ' . $transaction['transactionDate']);
-                if ($this->update) {
+
+				$dateTime = new \DateTime($transaction['transactionDate']);
+				$readableFormat = $dateTime->format('d.m.Y H:i');
+				$opportunitiesNew[] = $transaction['payerAlternateName'] . ': ' . $transaction['transactionAmount'] . ' ' . $transaction['transactionAmountCurrency'] . ', ' . $readableFormat;
+
+				if ($this->update) {
                     $this->SalesforceService->opportunityCreate($transaction['contactId']
                         , $transaction['payerAlternateName']
                         , $transaction['accountId']
@@ -337,7 +342,8 @@ class CompareService
             $line['transactionType'] = $transactionInfo['transaction_event_code'];
             $line['transactionDate'] = $transactionInfo['transaction_initiation_date'];
             $line['transactionAmount'] = $transactionInfo['transaction_amount']['value'];
-            $line['transactionFee'] = isset($transactionInfo['fee_amount']) ? ltrim($transactionInfo['fee_amount']['value'], '-') : null;
+			$line['transactionAmountCurrency'] = $transactionInfo['transaction_amount']['currency_code'];
+			$line['transactionFee'] = isset($transactionInfo['fee_amount']) ? ltrim($transactionInfo['fee_amount']['value'], '-') : null;
             $line['transactionNote'] = $transactionInfo['transaction_note'] ?? null;
 
             $payerInfo = $transaction['payer_info'];
@@ -495,5 +501,4 @@ class CompareService
         }
         return $delimiter;
     }
-
 }

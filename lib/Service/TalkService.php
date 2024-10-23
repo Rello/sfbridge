@@ -106,16 +106,18 @@ class TalkService {
 			return 'No new transactions';
 		}
 
-		$output = '';
-		foreach ($message['counts'] as $key => $value) {
-			$output .= "{$key}: {$value}\n";
-		}
 
 		$labels = [
 			'new contacts' => 'new contacts',
 			'new opportunities' => 'new opportunities',
 			'updated opportunities' => 'updated opportunities'
 		];
+
+		foreach ($labels as $key => $label) {
+			if (!empty($message[$key])) {
+				$output .= $label . ': ' . implode(', ', $message[$key]) . '\\n';
+			}
+		}
 
 		foreach ($labels as $key => $label) {
 			if (!empty($message[$key])) {

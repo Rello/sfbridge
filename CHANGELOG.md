@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0 - 2024-xx-xx
+### Added
+- Post compare results to a Talk room #1
+
+### Changed
+- SPDX Header
+
 ## 0.4.0 - 2024-03-14
 ### Changed
 - admin setting for excluded paypal transaction types
