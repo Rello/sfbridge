@@ -15,10 +15,11 @@ Paypal or bank transactions like donations or payments can be synchronized with 
 - Salesforce: Link Opportunities to Campaigns
 - Nextcloud: Automation via background job
 - Nextcloud: Notifications for new transactions
+- Nextcloud: Using Talk room for update history
 
 ##### Please check GitHub for details first!
 ]]></description>
-    <version>0.4.0</version>
+    <version>0.5.0</version>
     <licence>agpl</licence>
     <author>Marcel Scherello</author>
     <namespace>SFbridge</namespace>

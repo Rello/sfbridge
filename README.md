@@ -8,10 +8,10 @@ Donations/payments in Paypal or bank accounts can be synchronized with the Sales
 </p>
 
 ## Benefits
-- Reduce manual efforts to enter transactions in salesforce
+- Reduce manual efforts for entering transactions in salesforce
 - High quality of data (e.g. no duplicates)
 - Avoid user errors
-- No data is stored in Nextcloud (compliance to GPDR)
+- No data is stored in Nextcloud (GDPR compliance)
 - License free
 
 ## Features
@@ -22,6 +22,7 @@ Donations/payments in Paypal or bank accounts can be synchronized with the Sales
 - Salesforce: Link Opportunities to Campaigns
 - Nextcloud: Automation via background job
 - Nextcloud: Notifications for new transactions
+- Nextcloud: Using Talk room for update history
 
 By using the API for csv data, bank accounts can also be synced (e.g. via the file export of MoneyMoney)
 
