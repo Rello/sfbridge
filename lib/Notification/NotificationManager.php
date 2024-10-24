@@ -17,6 +17,7 @@ use OCP\IGroup;
 class NotificationManager
 {
     const NEW_TRANSACTION = 'new_transaction';
+	const ERROR = 'error';
     /** @var INotificationManager */
     protected $notificationManager;
     private $logger;

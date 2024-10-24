@@ -13,6 +13,29 @@ Util::addScript('sfbridge', 'userGuidance');
 ?>
 
 <div class="section">
+    <input type="checkbox" id="sfBackground" class="checkbox"><label for="sfBackground"><?php p($l->t('Run checks in background')); ?></label>
+    <br><br>
+    <input type="checkbox" id="sfBackgroundUpdate" class="checkbox"><label for="sfBackgroundUpdate"><?php p($l->t('Update Salesforece during background check')); ?></label>
+</div>
+
+<div class="section">
+    <h2><?php p($l->t('Talk settings for log messages')); ?></h2>
+    <input type="text" id="talkRoom" value="<?php p($_['talkRoom']); ?>" style="width: 300px;">
+    <p>
+        <em><?php p($l->t('A valid talk room is required')); ?></em>
+    </p>
+    <br>
+    <input type="text" id="talkUser" value="<?php p($_['talkUser']); ?>" style="width: 300px;">
+    <p>
+        <em><?php p($l->t('A valid user id is required who is member of the talk room')); ?></em>
+    </p>
+    <br><br>
+    <button id="saveTalk" type="button" class="primary">
+		<?php p($l->t('Save')); ?>
+    </button>
+</div>
+
+<div class="section">
     <h2><?php p($l->t('Paypal Settings')); ?></h2>
     <div style="display: table;">
         <div style="display: table-row;">
@@ -110,23 +133,6 @@ Util::addScript('sfbridge', 'userGuidance');
 </div>
 
 <div class="section">
-    <h2><?php p($l->t('Talk Settings for log messages')); ?></h2>
-    <input type="text" id="talkRoom" value="<?php p($_['talkRoom']); ?>" style="width: 300px;">
-    <p>
-        <em><?php p($l->t('A valid talk room is required')); ?></em>
-    </p>
-    <br>
-    <input type="text" id="talkUser" value="<?php p($_['talkUser']); ?>" style="width: 300px;">
-    <p>
-        <em><?php p($l->t('A valid user id is required who is member of the talk room')); ?></em>
-    </p>
-    <br><br>
-    <button id="saveTalk" type="button" class="primary">
-		<?php p($l->t('Save')); ?>
-    </button>
-</div>
-
-<div class="section">
     <h2><?php p($l->t('Bank Settings')); ?></h2>
     <input type="text" id="sfBankExcludes" value="<?php p($_['bank_excludes']); ?>" style="width: 300px;">
     <p>
@@ -144,8 +150,5 @@ Util::addScript('sfbridge', 'userGuidance');
     </button>
 </div>
 
-<div class="section">
-    <input type="checkbox" id="sfBackground" class="checkbox"><label for="sfBackground">Daily Background Check (no
-        update)</label>
-</div>
+
 

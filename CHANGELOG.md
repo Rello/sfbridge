@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.5.0 - 2024-xx-xx
+## 0.5.0 - 2024-10-24
 ### Added
 - Post compare results to a Talk room #1
 

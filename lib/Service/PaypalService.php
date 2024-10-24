@@ -83,10 +83,10 @@ class PaypalService
         $parameter = $this->StoreService->getSecureParameter(self::APPLICATION);
         $this->instanceUrl = $parameter['instanceUrl'];
         if ($token !== false) {
-            $this->logger->info('Paypal token still valid');
+            $this->logger->debug('Paypal token still valid');
             $this->accessToken = $token['accessToken'];
         } else {
-            $this->logger->info('Paypal token renew requested');
+            $this->logger->debug('Paypal token renew requested');
             $newToken = $this->auth();
             $validity = time() + $newToken['expires_in'];
             $this->StoreService->setSecureToken(self::APPLICATION, $newToken['accessToken'], null, $validity);

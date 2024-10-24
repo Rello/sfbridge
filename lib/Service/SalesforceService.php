@@ -70,11 +70,11 @@ class SalesforceService
     {
         $token = $this->StoreService->getSecureToken(self::APPLICATION);
         if ($token !== false) {
-            $this->logger->info('Salesforce token still valid');
+            $this->logger->debug('Salesforce token still valid');
             $this->accessToken = $token['accessToken'];
             $this->instanceUrl = $token['instanceUrl'];
         } else {
-            $this->logger->info('Salesforce token renew requested');
+            $this->logger->debug('Salesforce token renew requested');
             $newToken = $this->auth();
             $validity = time() + (60 * 60 * 2);
             $this->StoreService->setSecureToken(self::APPLICATION, $newToken['accessToken'], $newToken['instanceUrl'], $validity);

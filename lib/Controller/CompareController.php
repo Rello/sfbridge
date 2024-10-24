@@ -9,9 +9,7 @@
 namespace OCA\SFbridge\Controller;
 
 use OCA\SFbridge\Service\CompareService;
-use OCA\SFbridge\Salesforce\Exception\SalesforceException;
 use OCP\AppFramework\Controller;
-use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 use Psr\Log\LoggerInterface;
@@ -41,24 +39,11 @@ class CompareController extends Controller
      * @param $from
      * @param $to
      * @return DataResponse
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function compare($update, $from, $to): DataResponse
     {
-        try {
-            $return = $this->CompareService->paypal($update, $from, $to);
-			if ($return) {
-				$status = Http::STATUS_OK;
-			} else {
-				$status = Http::STATUS_INTERNAL_SERVER_ERROR;
-				$return = 'Please configure the Talk Settings';
-			}
-        }
-        catch (SalesforceException $e) {
-            $return = "exception: " . json_encode($e->getErrors());
-            $status = $e->getCode();
-        }
-        return new DataResponse($return, $status);
+		$return = $this->CompareService->paypal($update, $from, $to);
+        return new DataResponse($return['content'], $return['status']);
     }
 
 }

@@ -28,7 +28,7 @@ class Daily extends TimedJob
     )
     {
         parent::__construct($time);
-        $this->setInterval((60 * 60 * 2) - 120); // 2 minutes because exact times would drift to the next cron execution
+        $this->setInterval(60 * 60);
         $this->logger = $logger;
         $this->CompareService = $CompareService;
         $this->StoreService = $StoreService;
@@ -37,14 +37,16 @@ class Daily extends TimedJob
     /**
      * @throws GuzzleException
      */
-    public function run($arguments)
+    public function run($argument)
     {
         try {
             $scheduled = $this->StoreService->getParameter('backgroundJob');
+			$update = $this->StoreService->getParameter('backgroundUpdate') == 1 ? 'true' : 'false';
             if ($scheduled) {
+				$this->logger->info("Running Salesforce Bridge");
                 $from = date('Y-m-d\T00:00', strtotime("-3 days"));
                 $to = date('Y-m-d\T00:00', strtotime("+1 day"));
-                $this->CompareService->paypal(false, $from, $to, true);
+                $this->CompareService->paypal($update, $from, $to, true);
             }
         } catch (\Exception $e) {
             // no action

@@ -58,6 +58,10 @@ class Admin implements IDelegatedSettings
             'background',
             $this->StoreService->getParameter('backgroundJob')
         );
+		$this->initialState->provideInitialState(
+			'backgroundUpdate',
+			$this->StoreService->getParameter('backgroundUpdate')
+		);
 
         $parameters = [
             'paypal_client_id' => $paypal['client_id']?? null,

@@ -43,7 +43,19 @@ class SettingsController extends Controller
         return new DataResponse($this->StoreService->setParameter('backgroundJob', $background));
     }
 
-    /**
+	/**
+	 * enable or disable the background update scheduling
+	 *
+	 * @NoAdminRequired
+	 * @param bool $backgroundUpdate
+	 * @return DataResponse
+	 */
+	public function backgroundUpdate($backgroundUpdate = false)
+	{
+		return new DataResponse($this->StoreService->setParameter('backgroundUpdate', $backgroundUpdate));
+	}
+
+	/**
      * set Paypal parameters
      *
      * @NoAdminRequired

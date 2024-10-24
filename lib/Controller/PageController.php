@@ -9,12 +9,9 @@
 namespace OCA\SFbridge\Controller;
 
 use OCP\AppFramework\Controller;
-use OCP\AppFramework\Services\IInitialState;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\IConfig;
 use OCP\IRequest;
-use OCP\IURLGenerator;
-use OCP\IUserSession;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -24,26 +21,16 @@ class PageController extends Controller
 {
     /** @var IConfig */
     protected $config;
-    /** @var IUserSession */
-    private $userSession;
-    /** @var IInitialState */
-    protected $initialState;
     private $logger;
 
     public function __construct(
         string $appName,
         IRequest $request,
         LoggerInterface $logger,
-        IUserSession $userSession,
-        IConfig $config,
-        IInitialState $initialState
     )
     {
         parent::__construct($appName, $request);
         $this->logger = $logger;
-        $this->userSession = $userSession;
-        $this->initialState = $initialState;
-        $this->config = $config;
     }
 
     /**
@@ -52,11 +39,6 @@ class PageController extends Controller
      */
     public function index()
     {
-        $user = $this->userSession->getUser();
-        $this->initialState->provideInitialState(
-            'background',
-            $this->config->getUserValue($user->getUID(), 'sfbridge', 'background', false)
-        );
         $params = array();
         return new TemplateResponse($this->appName, 'main', $params);
     }

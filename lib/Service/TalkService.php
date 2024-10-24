@@ -52,7 +52,7 @@ class TalkService {
 		$userId = $this->storeService->getParameter('talkUser');
 
 		if (!$roomId || !$userId) {
-			$this->logger->error("Missing room parameter");
+			$this->logger->debug("Missing room parameter");
 			return false;
 		}
 
@@ -60,7 +60,7 @@ class TalkService {
 			$room = $this->talkManager->getRoomByToken($roomId);
 			$participant = $this->participantService->getParticipant($room, $userId, false);
 		} catch (RoomNotFoundException|ParticipantNotFoundException) {
-			$this->logger->error("Talk user or room not found");
+			$this->logger->debug("Talk user or room not found");
 			return false;
 		}
 		return true;
@@ -81,7 +81,7 @@ class TalkService {
 			$room = $this->talkManager->getRoomByToken($roomId);
 			$participant = $this->participantService->getParticipant($room, $userId, false);
 		} catch (RoomNotFoundException|ParticipantNotFoundException) {
-			$this->logger->error("Talk user or room not found or user not member of the room");
+			$this->logger->debug("Talk user or room not found or user not member of the room");
 			return false;
 		}
 
@@ -113,17 +113,13 @@ class TalkService {
 			'updated opportunities' => 'updated opportunities'
 		];
 
+		$output = '';
 		foreach ($labels as $key => $label) {
 			if (!empty($message[$key])) {
-				$output .= $label . ': ' . implode(', ', $message[$key]) . '\\n';
+				$output .= $label . ': ' . implode(', ', $message[$key]) . "\n\n";
 			}
 		}
 
-		foreach ($labels as $key => $label) {
-			if (!empty($message[$key])) {
-				$output .= $label . ': ' . implode(', ', $message[$key]) . '\n';
-			}
-		}
 		return $output;
 	}
 }

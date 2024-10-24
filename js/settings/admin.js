@@ -148,6 +148,28 @@ OCA.SFbridge.Settings = {
         xhr.send(params);
     },
 
+    backgroundUpdate: function () {
+        let backgroundUpdate = document.getElementById('sfBackgroundUpdate').checked;
+        let params = 'backgroundUpdate=' + backgroundUpdate;
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', OC.generateUrl('apps/sfbridge/backgroundUpdate', true));
+        xhr.setRequestHeader('requesttoken', OC.requestToken);
+        xhr.setRequestHeader('OCS-APIREQUEST', 'true');
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=UTF-8');
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    OCA.SFbridge.Notification.notification('success', t('sfbridge', 'Saved'));
+                } else {
+                    OCA.SFbridge.Notification.notification('error', t('sfbridge', 'Error'));
+                }
+            }
+        };
+        xhr.send(params);
+    },
+
     getInitialState: function (key) {
         const app = 'sfbridge';
         const elem = document.querySelector(`#initial-state-${app}-${key}`)
@@ -166,4 +188,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('saveTalk').addEventListener('click', OCA.SFbridge.Settings.setTalk);
     document.getElementById('sfBackground').addEventListener('click', OCA.SFbridge.Settings.background);
     document.getElementById('sfBackground').checked = OCA.SFbridge.Settings.getInitialState('background') === '1';
+    document.getElementById('sfBackgroundUpdate').addEventListener('click', OCA.SFbridge.Settings.backgroundUpdate);
+    document.getElementById('sfBackgroundUpdate').checked = OCA.SFbridge.Settings.getInitialState('backgroundUpdate') === '1';
 });

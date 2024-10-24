@@ -29,6 +29,7 @@ return [
         ['name' => 'compare#compare', 'url' => '/compare', 'verb' => 'POST'],
 
         ['name' => 'settings#background', 'url' => '/background', 'verb' => 'POST'],
+		['name' => 'settings#backgroundUpdate', 'url' => '/backgroundUpdate', 'verb' => 'POST'],
 
         ['name' => 'settings#setParameterPaypal', 'url' => '/settings/paypal', 'verb' => 'POST'],
         ['name' => 'settings#setParameterSalesforce', 'url' => '/settings/salesforce', 'verb' => 'POST'],

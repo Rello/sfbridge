@@ -58,7 +58,7 @@ class Notifier implements INotifier
      */
     public function getName(): string
     {
-        return $this->l10nFactory->get('sfbridge')->t('New Transactions');
+        return $this->l10nFactory->get('sfbridge')->t('Salesforce Bridge');
     }
 
     /**
@@ -81,6 +81,9 @@ class Notifier implements INotifier
             case NotificationManager::NEW_TRANSACTION:
                 $parsedSubject = $l->t('{subject} new transactions of {amount}€ available in Paypal');
                 break;
+			case NotificationManager::ERROR:
+				$parsedSubject = $l->t('Error. Please check the logs');
+				break;
             default: // legacy due to switch to subject field filled with an id for notification removal
                 $parsedSubject = '';
         }
