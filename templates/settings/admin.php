@@ -15,7 +15,7 @@ Util::addScript('sfbridge', 'userGuidance');
 <div class="section">
     <input type="checkbox" id="sfBackground" class="checkbox"><label for="sfBackground"><?php p($l->t('Run checks in background')); ?></label>
     <br><br>
-    <input type="checkbox" id="sfBackgroundUpdate" class="checkbox"><label for="sfBackgroundUpdate"><?php p($l->t('Update Salesforece during background check')); ?></label>
+    <input type="checkbox" id="sfBackgroundUpdate" class="checkbox"><label for="sfBackgroundUpdate"><?php p($l->t('Update Salesforce during background check')); ?></label>
 </div>
 
 <div class="section">

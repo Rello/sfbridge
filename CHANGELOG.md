@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.1 - 2025-01-06
+### Changed
+- bank: use valuta and not booking date
+
 ## 0.5.0 - 2024-10-24
 ### Added
 - Post compare results to a Talk room #1

@@ -403,16 +403,16 @@ class CompareService {
 			$row = str_getcsv($transaction, $delimiter, '"');
 
 			//$this->logger->info('Data set raw: ' . json_encode($row));
-			$dateDelimiter = $this->detectDelimiter($row[0]);
+			$dateDelimiter = $this->detectDelimiter($row[1]);
 			//$this->logger->info('Using date delimiter: ' . $dateDelimiter);
 			if ($dateDelimiter === '/') {
 				// US date format
 				//$this->logger->info('US date');
-				$date = explode($dateDelimiter, $row[0]);
+				$date = explode($dateDelimiter, $row[1]);
 				$date = $date[2] . '-' . $date[0] . '-' . $date[1];
 			} elseif ($dateDelimiter === '.') {
 				// DE date format
-				$date = explode($dateDelimiter, $row[0]);
+				$date = explode($dateDelimiter, $row[1]);
 				$date = $date[2] . '-' . $date[1] . '-' . $date[0];
 				//$this->logger->info('German date');
 			} else {
