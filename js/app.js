@@ -118,7 +118,7 @@ OCA.SFbridge.SF = {
                 } else {
                     let contacts = '';
                     for (let contact of data['records']) {
-                        contacts = contacts + 'OpportunityId: ' + contact['Id'] + ' Amount: ' + contact['Opportunity']['Amount'] + '<br>';
+                        contacts = contacts + 'OpportunityId: ' + contact['Id'] + ' Amount: ' + contact['Amount'] + '<br>';
                     }
                     document.getElementById('sfOpportunity').innerHTML = contacts;
                 }

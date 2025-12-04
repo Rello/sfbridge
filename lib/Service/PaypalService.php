@@ -114,7 +114,8 @@ class PaypalService
             'end_date' => $end,
             'fields' => 'payer_info,cart_info',
             'transaction_status' => 'S',
-            'transaction_type' => $type
+            'transaction_type' => $type,
+			'page_size' => 500,
         ];
         $client = new Client();
         try {

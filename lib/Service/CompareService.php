@@ -33,12 +33,12 @@ class CompareService {
 	private $campaignCount = 0;
 
 	public function __construct(
-		LoggerInterface $logger,
-		PaypalService $PaypalService,
+		LoggerInterface     $logger,
+		PaypalService       $PaypalService,
 		NotificationManager $NotificationManager,
-		SalesforceService $SalesforceService,
-		StoreService $StoreService,
-		TalkService $TalkService
+		SalesforceService   $SalesforceService,
+		StoreService        $StoreService,
+		TalkService         $TalkService
 	) {
 		$this->logger = $logger;
 		$this->PaypalService = $PaypalService;
@@ -79,8 +79,7 @@ class CompareService {
 		try {
 			$return['content'] = $this->processTransactions($transactions, $transactionsLined, $isBackgroundJob);
 			$return['status'] = Http::STATUS_OK;
-		}
-		catch (SalesforceException $e) {
+		} catch (SalesforceException $e) {
 			if ($isBackgroundJob) {
 				$this->NotificationManager->triggerNotification(NotificationManager::ERROR, 0, 0, [
 					'subject' => 0,
@@ -279,6 +278,12 @@ class CompareService {
 				$contact = $this->SalesforceService->contactSearch('Name', $transaction['payerAlternateName']);
 				$this->logger->debug('Search by AlternateName: ' . $transaction['payerAlternateName']);
 				$this->logger->debug('Number of matches: ' . $contact['totalSize']);
+
+				if ($contact['totalSize'] === 0) {
+					$contact = $this->SalesforceService->contactSearch('Bankaccountholder__c', $transaction['payerAlternateName']);
+					$this->logger->debug('Search Bankaccount field by AlternateName: ' . $transaction['payerAlternateName']);
+					$this->logger->debug('Number of matches: ' . $contact['totalSize']);
+				}
 			}
 
 			// enable for testing
@@ -288,7 +293,15 @@ class CompareService {
 				$this->contactsNewCount++;
 				if ($this->update) {
 					$this->logger->debug('New Contact to be created: ' . $transaction['payerGivenName'] . '-' . $transaction['payerSurName'] . '-' . $transaction['payerAlternateName']);
-					$newContact = $this->SalesforceService->contactCreate($transaction['payerGivenName'], $transaction['payerSurName'], $transaction['payerAlternateName'], $transaction['payerEmail']);
+					$newContact = $this->SalesforceService->contactCreate(
+						$transaction['payerGivenName'],
+						$transaction['payerSurName'],
+						$transaction['payerAlternateName'],
+						$transaction['payerEmail'],
+						$transaction['addressStreet'],
+						$transaction['addressCity'],
+						$transaction['addressPostalCode'],
+						$transaction['addressCountryCode']);
 					$transaction['contactId'] = $newContact['contactId'];
 					$transaction['accountId'] = $newContact['accountId'];
 					$transaction['isNewContact'] = true;
@@ -384,6 +397,18 @@ class CompareService {
 			$line['itemCode'] = $itemInfo['item_code'] ?? null;
 			$line['paymentMethod'] = 'Paypal';
 
+			$shippingInfo = $transaction['shipping_info'] ?? null;
+			$line['addressStreet'] = $shippingInfo['address']['line1'] ?? null;
+			$line['addressCity'] = $shippingInfo['address']['city'] ?? null;
+			$line['addressPostalCode'] = $shippingInfo['address']['postal_code'] ?? null;
+
+			$code = strtoupper($shippingInfo['address']['country_code'] ?? '');
+			$countryMap = [
+				'DE' => 'Germany',
+				'US' => 'United States',
+			];
+			$line['addressCountryName'] = $countryMap[$code] ?? $code;
+
 			$transactionsLined[] = $line;
 		}
 		return $transactionsLined;
@@ -443,6 +468,11 @@ class CompareService {
 
 			$line['itemCode'] = null;
 			$line['paymentMethod'] = $method;
+
+			$line['addressStreet'] = null;
+			$line['addressCity'] = null;
+			$line['addressCountryCode'] = null;
+			$line['addressPostalCode'] = null;
 
 			$transactionsLined[] = $line;
 		}

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.0 - 2025-12-04
+### Changed
+- store bank account name in contact->Bankaccountholder__c
+- use Bankaccountholder__c for additional contact search
+
 ## 0.5.1 - 2025-01-06
 ### Changed
 - bank: use valuta and not booking date

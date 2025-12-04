@@ -91,17 +91,4 @@ class SalesforceController extends Controller
     {
         return new DataResponse($this->SalesforceService->opportunityCreate($contactId, $name, $accountId, $amount));
     }
-
-    /**
-     * create new blank report
-     *
-     * @NoAdminRequired
-     * @return DataResponse
-     */
-    public function paymentSearch()
-    {
-        return new DataResponse($this->SalesforceService->paymentSearch());
-    }
-
-
 }

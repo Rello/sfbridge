@@ -94,42 +94,64 @@ class SalesforceService
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
      */
-    public function contactCreate($givenName, $surName, $alternateName, $email): array
-    {
-        if (!$givenName && !$surName) {
-            // is corporate account
-            $type = 'Corporate';
-            $recordTypeId = '01209000001L14XAAS';
-            $surName = $alternateName;
-        } else {
-            $type = 'Household';
-            $recordTypeId = '01209000001L14WAAS';
-            $alternateName = $alternateName . ' Haushalt';
-        }
+	/* One-line: Updated contactCreate to accept and send address fields to Salesforce. */
+	public function contactCreate($givenName, $surName, $alternateName, $email, $street = null, $city = null, $postalCode = null, $country = null): array
+	{
+		// Ensure we have a valid access token/instance URL
+		$this->authCheck();
+		$bankFullName = $alternateName;
 
-        $data = [
-            'Name' => $alternateName,
-            'Type' => $type,
-            'RecordTypeId' => $recordTypeId
-        ];
-        $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
-        $accountId = $salesforceFunctions->create('Account', $data);
+		if (!$givenName && !$surName) {
+			// is corporate account
+			$type = 'Corporate';
+			$recordTypeId = '01209000001L14XAAS';
+			$surName = $alternateName;
+		} else {
+			$type = 'Household';
+			$recordTypeId = '01209000001L14WAAS';
+			$alternateName = $alternateName . ' Haushalt';
+		}
 
-        $data = [
-            'AccountId' => $accountId,
-            'FirstName' => $givenName,
-            'LastName' => $surName,
-            'Email' => $email,
-        ];
-        $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
-        $contactId = $salesforceFunctions->create('Contact', $data);
+		$accountData = [
+			'Name' => $alternateName,
+			'Type' => $type,
+			'RecordTypeId' => $recordTypeId,
+		];
 
-        return [
-            'accountId' => $accountId,
-            'contactId' => $contactId
-        ];
-    }
+		$salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
+		$accountId = $salesforceFunctions->create('Account', $accountData);
 
+		// Contact data (use Salesforce Contact mailing address fields)
+		$contactData = [
+			'AccountId' => $accountId,
+			'FirstName' => $givenName,
+			'LastName' => $surName,
+			'Email' => $email,
+			'Bankaccountholder__c' => $bankFullName, // store bank account name for backup search
+		];
+
+		// optional mailing address fields in case delivered from the paypal transaction
+		if ($street !== null) {
+			$contactData['MailingStreet'] = $street;
+		}
+		if ($city !== null) {
+			$contactData['MailingCity'] = $city;
+		}
+		if ($postalCode !== null) {
+			$contactData['MailingPostalCode'] = $postalCode;
+		}
+		if ($country !== null) {
+			$contactData['MailingCountry'] = $country;
+		}
+
+		$salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
+		$contactId = $salesforceFunctions->create('Contact', $contactData);
+
+		return [
+			'accountId' => $accountId,
+			'contactId' => $contactId
+		];
+	}
     /**
      * get all contacts
      *
@@ -138,7 +160,7 @@ class SalesforceService
      */
     public function contactIndex()
     {
-
+		$this->authCheck();
         $query = 'SELECT Id, AccountId, Name, FirstName, LastName FROM Contact LIMIT 100';
 
         $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
@@ -155,7 +177,8 @@ class SalesforceService
      */
     public function contactSearch($field, $keyword)
     {
-        $query = 'SELECT Id, Name, AccountId FROM Contact WHERE ' . $field . ' = \'' . $keyword . '\'';
+		$this->authCheck();
+		$query = 'SELECT Id, Name, AccountId FROM Contact WHERE ' . $field . ' = \'' . $keyword . '\'';
 
         $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
         return $salesforceFunctions->query($query);
@@ -171,7 +194,8 @@ class SalesforceService
      */
     public function opportunitySearch($field, $keyword)
     {
-        $query = 'SELECT Id, OpportunityId, Amount FROM Opportunity WHERE ' . $field . ' = \'' . $keyword . '\'';
+		$this->authCheck();
+		$query = 'SELECT Id, Amount FROM Opportunity WHERE ' . $field . ' = \'' . $keyword . '\'';
 
         $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
         $data = $salesforceFunctions->query($query);
@@ -188,8 +212,9 @@ class SalesforceService
      */
     public function opportunityPledgeSearch($contactId, $amount)
     {
-        // in case several pledges already exist for the future, the oldest one will be used
-        $query = 'SELECT Id, Name FROM Opportunity WHERE StageName = \'Pledged\' AND ContactId = \'' . $contactId . '\' AND Amount = ' . $amount . ' ORDER BY CloseDate ASC';
+		$this->authCheck();
+		// in case several pledges already exist for the future, the oldest one will be used
+        $query = "SELECT Id, Name FROM Opportunity WHERE StageName = 'Pledged' AND ContactId = '{$contactId}' AND Amount = {$amount} ORDER BY CloseDate ASC";
         $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
         $opportunity = $salesforceFunctions->query($query);
         if ($opportunity['totalSize'] !== 0) {
@@ -210,7 +235,8 @@ class SalesforceService
      */
     public function opportunityPledgeUpdate($id, $date)
     {
-        // Update pledge to status Closed Won
+		$this->authCheck();
+		// Update pledge to status Closed Won
         $data = [
             'StageName' => 'Closed Won',
             'CloseDate' => $date,
@@ -238,9 +264,25 @@ class SalesforceService
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \OCA\SFbridge\Salesforce\Exception\SalesforceException
      */
-    public function opportunityCreate($contactId, $name, $accountId, $amount, $fee, $date, $paypalId, $isNewContact, $campaignId, $transactionNote, $paymentMethod)
-    {
+	public function opportunityCreate(
+		$contactId,
+		$name,
+		$accountId,
+		$amount,
+		$fee = 0,
+		$date = null,
+		$paypalId = null,
+		$isNewContact = false,
+		$campaignId = null,
+		$transactionNote = null,
+		$paymentMethod = null
+	)
+	{
+		$this->authCheck();
 
+		if ($date === null) {
+			$date = date('Y-m-d');
+		}
         $data = [
             'contactId' => $contactId,
             'name' => $name,
@@ -287,7 +329,8 @@ class SalesforceService
      */
     public function paymentByOpportunityId($opportunityId)
     {
-        $query = 'SELECT Id FROM npe01__OppPayment__c WHERE npe01__Opportunity__c = \'' . $opportunityId . '\'';
+		$this->authCheck();
+		$query = 'SELECT Id FROM npe01__OppPayment__c WHERE npe01__Opportunity__c = \'' . $opportunityId . '\'';
 
         $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
         $paymentId = $salesforceFunctions->query($query);
@@ -309,7 +352,8 @@ class SalesforceService
      */
     public function allocationCreate($opportunityId, $fee)
     {
-        if ($fee) {
+		$this->authCheck();
+		if ($fee) {
             $data = [
                 'npsp__Amount__c' => $fee,
                 'npsp__Opportunity__c' => $opportunityId,
@@ -334,7 +378,8 @@ class SalesforceService
      */
     private function paymentCreate($opportunityId, $paypalId, $amount, $date, $method)
     {
-        $data = [
+		$this->authCheck();
+		$data = [
             'npe01__Opportunity__c' => $opportunityId,
             'npe01__Check_Reference_Number__c' => $paypalId,
             'npe01__Payment_Method__c' => $method,
@@ -358,7 +403,8 @@ class SalesforceService
      */
     public function paymentUpdateReference($paymentId, $referenceId, $method)
     {
-        $data = [
+		$this->authCheck();
+		$data = [
             'npe01__Check_Reference_Number__c' => $referenceId,
             'npe01__Payment_Method__c' => $method,
         ];
@@ -376,8 +422,8 @@ class SalesforceService
      */
     public function paymentsByReference($data)
     {
-        $auth = $this->authCheck();
-        $references = implode("','", $data);
+		$this->authCheck();
+		$references = implode("','", $data);
         $query = 'SELECT Id, npe01__Check_Reference_Number__c FROM npe01__OppPayment__c WHERE npe01__Check_Reference_Number__c IN (\'' . $references . '\')';
 
         $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
@@ -397,7 +443,8 @@ class SalesforceService
      */
     public function campaignByPaypalItem($item)
     {
-        $query = 'SELECT Id, Name FROM Campaign WHERE PaypalArtikelName__c = \'' . $item . '\'';
+		$this->authCheck();
+		$query = 'SELECT Id, Name FROM Campaign WHERE PaypalArtikelName__c = \'' . $item . '\'';
 
         $salesforceFunctions = new SalesforceFunctions($this->instanceUrl, $this->accessToken);
         return $salesforceFunctions->query($query);

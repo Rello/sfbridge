@@ -19,7 +19,7 @@ Paypal or bank transactions like donations or payments can be synchronized with 
 
 ##### Please check GitHub for details first!
 ]]></description>
-    <version>0.5.1</version>
+    <version>0.6.0</version>
     <licence>agpl</licence>
     <author>Marcel Scherello</author>
     <namespace>SFbridge</namespace>
