@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1 - 2025-12-04
+### Fixed 
+- missing paypal shipping_info
+
 ## 0.6.0 - 2025-12-04
 ### Changed
 - store bank account name in contact->Bankaccountholder__c
