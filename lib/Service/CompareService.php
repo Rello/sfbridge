@@ -404,8 +404,8 @@ class CompareService {
 
 			$code = strtoupper($shippingInfo['address']['country_code'] ?? '');
 			$countryMap = [
-				'DE' => 'Germany',
-				'US' => 'United States',
+				'DE' => 'Deutschland',
+				'AT' => 'Österreich',
 			];
 			$line['addressCountryName'] = $countryMap[$code] ?? $code;
 
@@ -471,8 +471,8 @@ class CompareService {
 
 			$line['addressStreet'] = null;
 			$line['addressCity'] = null;
-			$line['addressCountryCode'] = null;
 			$line['addressPostalCode'] = null;
+			$line['addressCountryCode'] = null;
 
 			$transactionsLined[] = $line;
 		}
