@@ -112,7 +112,7 @@ class PaypalService
         $params = [
             'start_date' => $start,
             'end_date' => $end,
-            'fields' => 'payer_info,cart_info',
+            'fields' => 'payer_info,cart_info,shipping_info',
             'transaction_status' => 'S',
             'transaction_type' => $type,
 			'page_size' => 500,
